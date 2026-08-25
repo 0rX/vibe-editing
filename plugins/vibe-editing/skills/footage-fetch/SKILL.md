@@ -9,8 +9,8 @@ THE way to get footage off Google Drive onto this Mac. Crushes the browser and s
 
 ## 🔑 Golden rules (do not skip)
 1. **rclone, NEVER the browser.** Browser = one slow stream + a server-side zip that fails on 100GB+. rclone = parallel multi-thread, resumable, verifiable. ~40–50 MB/s sustained on Wi-Fi; 100 GB ≈ ~45 min.
-2. **EVERY separate download = its OWN project.** One `/folders/` link = ONE project (it's one shoot). EACH `/file/d/` link = its OWN project. NEVER lump separate downloads into one project. Scaffold via `new_project.sh <brand> <slug>` → `~/Downloads/<brand>/<YYYY-MM-DD>_<slug>/00_SOURCE/` (default brand `speaker`). (Learned the hard way — don't dump single-file pulls into a folder's project.)
-3. **Check disk FIRST.** Get total size, compare to `df -g` free, flag BEFORE pulling. Never fill the boot drive. 400GB+ won't fit internal → route to an external SSD.
+2. **EVERY separate download = its OWN project.** One `/folders/` link = ONE project (it's one shoot). EACH `/file/d/` link = its OWN project. NEVER lump separate downloads into one project. Scaffold via `new_project.py <brand> <slug>` → `%USERPROFILE%/Videos/vibe-editing/<brand>/<YYYY-MM-DD>_<slug>/00_SOURCE/` (default brand `speaker`). (Learned the hard way — don't dump single-file pulls into a folder's project.)
+3. **Check disk FIRST.** Get total size, compare to `free_gb()` (winenv) free, flag BEFORE pulling. Never fill the boot drive. 400GB+ won't fit internal → route to an external SSD.
 4. **Run DETACHED for anything big.** The harness reaps `run_in_background` tasks ~every 20–25 min mid-download. Launch with `nohup … & disown` so they survive the session.
 5. **Always MD5-verify** after (`rclone check … --one-way`). rclone stamps finished files with the SOURCE mtime — a *today* mtime on a "done" file means it's a browser copy or an unfinished partial.
 
@@ -26,14 +26,14 @@ rclone v1.74+ (brew). Remote `gdrive:` = **read-only** Google OAuth (`scope=driv
 # reachable?  "[]" (empty array, exit 0) = rclone can fetch it.  An error = not shared to this account.
 rclone lsjson gdrive: --drive-root-folder-id=<ID>
 rclone size  gdrive: --drive-root-folder-id=<FOLDER_ID>            # folder size
-df -g ~/Downloads | awk 'NR==2{print $4" GiB free"}'              # free space
+python -c "import sys; sys.path.insert(0,'lib/_shared'); from winenv import free_gb; print(f'{free_gb():.0f} GiB free')"              # free space
 ```
 Single-file size: the folder-by-ID trick returns `[]` for files, so use the **Google Drive MCP `get_file_metadata`** (if that account can see it), otherwise read the total off the first `--stats` line once the download starts.
 
 ## Download a FOLDER (whole folder → one project)
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/vault/scripts/new_project.sh <brand> <slug>
-DEST=~/Downloads/<brand>/<YYYY-MM-DD>_<slug>/00_SOURCE
+python ${CLAUDE_PLUGIN_ROOT}/vault/scripts/new_project.py <brand> <slug>
+DEST=%USERPROFILE%/Videos/vibe-editing/<brand>/<YYYY-MM-DD>_<slug>/00_SOURCE
 nohup rclone copy gdrive: "$DEST" --drive-root-folder-id=<FOLDER_ID> \
   --transfers=8 --multi-thread-streams=8 --multi-thread-cutoff=100M \
   --drive-acknowledge-abuse --stats=10s --stats-one-line -v \
@@ -42,8 +42,8 @@ nohup rclone copy gdrive: "$DEST" --drive-root-folder-id=<FOLDER_ID> \
 
 ## Download a SINGLE FILE (→ its own project) — by ID
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/vault/scripts/new_project.sh <brand> <slug>
-DEST=~/Downloads/<brand>/<YYYY-MM-DD>_<slug>/00_SOURCE
+python ${CLAUDE_PLUGIN_ROOT}/vault/scripts/new_project.py <brand> <slug>
+DEST=%USERPROFILE%/Videos/vibe-editing/<brand>/<YYYY-MM-DD>_<slug>/00_SOURCE
 nohup rclone backend copyid gdrive: <FILE_ID> "$DEST/" --multi-thread-streams=8 \
   --drive-acknowledge-abuse --stats=10s --stats-one-line -v \
   --log-file=/tmp/fetch_<slug>.log >/dev/null 2>&1 & disown
@@ -52,9 +52,9 @@ nohup rclone backend copyid gdrive: <FILE_ID> "$DEST/" --multi-thread-streams=8 
 
 ## One-shot helper (preferred)
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/footage-fetch/scripts/gdrive_pull.sh <brand> <drive-url-or-id> [slug]
+python ${CLAUDE_PLUGIN_ROOT}/skills/footage-fetch/scripts/gdrive_pull.py <brand> <drive-url-or-id> [slug]
 ```
-Detects folder vs file, runs reachability + disk checks, scaffolds **its own** project, downloads, MD5-verifies, and (for unknown-name single files) renames the project folder to the real filename. Logs to `/tmp/fetch_<slug>.log`. For big pulls, run IT detached: `nohup bash …/gdrive_pull.sh … >/tmp/x.log 2>&1 & disown`. For a queue of files, call it once per file (each gets its own project) and chain with a `df -g` guard between them.
+Detects folder vs file, runs reachability + disk checks, scaffolds **its own** project, downloads, MD5-verifies, and (for unknown-name single files) renames the project folder to the real filename. Logs to `/tmp/fetch_<slug>.log`. For big pulls, run IT detached: `python …/gdrive_pull.py … --detach`. For a queue of files, call it once per file (each gets its own project) and chain with a `free_gb()` (winenv) guard between them.
 
 ## Verify (always)
 ```bash
@@ -75,7 +75,7 @@ ps -Ao command | grep "[r]clone"                      # what's REALLY running
 - **Google throttles single-file pulls** — even a fast pipe tops out ~hundreds of Mbps per file; `--multi-thread-streams` mitigates.
 - **Trash** — files "deleted" in Finder still occupy disk until the Trash is emptied (`du -sh ~/.Trash`).
 - **Finder tags** — never move/delete a tagged item without per-item OK; read tags via xattr (Spotlight is off). 🟣 purple = frozen.
-- **Disk full mid-queue** — guard with `df -g` before each file; skip (don't overflow) and report what was skipped.
+- **Disk full mid-queue** — guard with `free_gb()` (winenv) before each file; skip (don't overflow) and report what was skipped.
 
 ## Default flow when Operator drops a link
 1. Default the brand to `speaker` (only use another Brand brand — creator / creator / creator — when the footage is clearly that brand). 2. Reachability + size + disk check (flag if it won't fit). 3. Scaffold its OWN project (folder→one project; each file→its own). 4. Detached download. 5. MD5-verify. 6. Report; rename any `Clip-<id>` project to the real filename. 7. After meaningful skill/vault changes, `backup_brain.sh`.

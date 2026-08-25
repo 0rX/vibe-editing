@@ -64,6 +64,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import PY, work_file  # noqa: E402
 import argparse, json, os, subprocess, sys, shutil
 from pathlib import Path
 
@@ -73,7 +74,7 @@ from fast_encode import encoder_args  # Brand fast-render standard — VideoTool
 CAP = _acq("caption-clips/scripts")
 PRESETS = _acq("caption-clips/presets")
 FONTSDIR = _acq("caption-clips/fonts/free_font")
-REFRAME = _acq("horizontal-to-vertical/scripts/reframe.sh")
+REFRAME = _acq("horizontal-to-vertical/scripts/reframe.py")
 AUDIO_AF = "highpass=f=80,loudnorm=I=-16:LRA=11:TP=-7,alimiter=limit=0.45:level=disabled"
 # Locked natural-warm color correction (matches the Speaker reference look; also corrects the
 # reframe's bt601/green matrix shift). Applied to the video BEFORE captions are drawn on top.
@@ -122,7 +123,7 @@ def eye_y_frac(path, n=10, t0=None, t1=None):
     ys = []
     for k in range(n):
         t = base + dur * (k + 1) / (n + 1)
-        tmp = '/tmp/_eyey_bs.png'
+        tmp = str(work_file('_eyey_bs.png'))
         subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-ss', f'{t:.3f}', '-i', str(path),
                         '-frames:v', '1', '-vf', 'scale=960:-1', tmp], check=False)
         img = _CV2.imread(tmp)
@@ -210,7 +211,7 @@ def main():
                 if ey is not None:
                     _eyearg = ['--eye-y-src', f'{ey:.4f}', '--eye-y-out', str(a.eye_y_out)]
                     print(f"    seg{i:02d} eye-line src={ey:.3f} -> locked", flush=True)
-            run(['bash', REFRAME, o, rf] + (['--res', a.res] if a.res != 'auto' else []) + _rfx() + _eyearg)
+            run([PY, str(REFRAME), o, rf] + (['--res', a.res] if a.res != 'auto' else []) + _rfx() + _eyearg)
             o = rf
         seglist.append((o, probe_dur(o), s.get('n'), s.get('cat')))
 
@@ -239,7 +240,7 @@ def main():
     elif not a.no_reframe:
         print("[3/6] face-tracked 9:16 reframe")
         v = work / 'assembled_9x16.mp4'
-        run(['bash', REFRAME, assembled, v] + (['--res', a.res] if a.res != 'auto' else []) + _rfx())
+        run([PY, str(REFRAME), assembled, v] + (['--res', a.res] if a.res != 'auto' else []) + _rfx())
         base = v
     else:
         print("[3/6] reframe skipped (captioning horizontal)")

@@ -31,8 +31,8 @@ tam_coherence.md ── (prompt) incomplete-thought check before render
 `tam_pipeline.py` is the one-command orchestrator for the first two boxes:
 
 ```bash
-python3 scripts/tam_pipeline.py --transcript session.json --format hotline \
-        --top-per 3 --top 20 --out ~/Downloads/<brand>/<job>/10_WORK/session
+python scripts/tam_pipeline.py --transcript session.json --format hotline \
+        --top-per 3 --top 20 --out %USERPROFILE%/Videos/vibe-editing/<brand>/<job>/10_WORK/session
 # → session.segments.json/.md  (exchanges, filler flagged)
 # → session.picks.json/.md     (combined ranked MINE/MAYBE across all exchanges)
 ```
@@ -48,7 +48,7 @@ python3 scripts/tam_pipeline.py --transcript session.json --format hotline \
 | `prompts/tam_tighten.md` | Within-clip HOOK→MEAT→PAYOFF keep/remove/trim editor (ported from CLIPPER_X `default-edit.ts`). |
 | `scripts/tam_tighten.py` | Optional runner: runs the tighten prompt (uses the `submit_edit_decisions` tool, CLI line-parse fallback), converts KEEP/REMOVE/TRIM → cut intervals `{cuts:[{start,end,reason}]}` (mergeable with `detect_fillers.py` for `cut_clip.py --fillers`). Needs per-utterance word timing. |
 | `prompts/tam_coherence.md` | Incomplete-thought / contextless-reference coherence validator (ported from CLIPPER_X `validate-assembly.ts`). Use after tighten, before render. |
-| `scripts/_selftest.py` | Offline self-test of the pure helpers on a synthetic transcript (no API/ffmpeg). `python3 _selftest.py`. |
+| `scripts/_selftest.py` | Offline self-test of the pure helpers on a synthetic transcript (no API/ffmpeg). `python _selftest.py`. |
 
 ## What was ported from each repo
 
@@ -83,11 +83,11 @@ python3 scripts/tam_pipeline.py --transcript session.json --format hotline \
 
 ```bash
 # 1) transcribe (Groq large-v3). For a STEREO call-in, get host/caller labels in one shot:
-GROQ_API_KEY=… python3 scripts/transcribe_isolated.py call.mp4 --out 10_WORK/call.transcript.json
+GROQ_API_KEY=… python scripts/transcribe_isolated.py call.mp4 --out 10_WORK/call.transcript.json
 # (mono Q&A: use the existing transcribe_groq.py → {segments:[{start,end,text}]})
 
 # 2) segment → select in one command (writes .segments.* and .picks.*):
-python3 scripts/tam_pipeline.py --transcript 10_WORK/call.transcript.json --format hotline \
+python scripts/tam_pipeline.py --transcript 10_WORK/call.transcript.json --format hotline \
         --top-per 3 --out 10_WORK/call
 # Then cut the MINE picks (SKILL.md step 4+), and per clip run tam_tighten.py and merge its cuts
 # with detect_fillers.py before cut_clip.py --fillers.

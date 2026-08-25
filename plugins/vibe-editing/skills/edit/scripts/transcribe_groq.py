@@ -51,7 +51,7 @@ def find_ffmpeg() -> str:
         return os.environ["FFMPEG"]
     import glob as _glob
     for c in [shutil.which("ffmpeg")] + sorted(
-        _glob.glob("/opt/homebrew/Cellar/ffmpeg-full/*/bin/ffmpeg")
+        []
     ):
         if c and Path(c).exists():
             return c

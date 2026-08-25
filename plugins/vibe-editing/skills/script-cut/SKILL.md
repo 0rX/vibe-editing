@@ -34,7 +34,7 @@ The kept words land on their true positions; the junk stays in the cut gaps.
 ## Run it
 ```bash
 # 1) one-time: install the toolchain (MFA + a python venv with numpy + num2words)
-bash ${CLAUDE_PLUGIN_ROOT}/skills/script-cut/scripts/setup_toolchain.sh
+bash ${CLAUDE_PLUGIN_ROOT}/skills/script-cut/scripts/setup_toolchain.ps1
 
 # 2) cut: produces <out>/cut_spec.json  (precise, in SOURCE seconds)
 "$VENV/bin/python" ${CLAUDE_PLUGIN_ROOT}/skills/script-cut/scripts/script_cut.py \
@@ -134,11 +134,11 @@ the actual cut is defined by the script. `n`/`cat` pass through (e.g. listicle n
 ## Pre-cut validation gate (shared — run BEFORE cutting)
 ```bash
 # Validate rough windows (pre-script-cut):
-python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/window_validator.py \
+python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/window_validator.py \
     --transcript words.json --spec structure.json --rough [--source VIDEO.mp4]
 
 # Validate cut_spec (post-script-cut, before rendering):
-python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/window_validator.py \
+python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/window_validator.py \
     --transcript words.json --spec cut_spec.json --rough [--source VIDEO.mp4]
 ```
 `--rough` = multi-segment-per-clip (rough windows OR cut_specs). Checks opener on first chunk,

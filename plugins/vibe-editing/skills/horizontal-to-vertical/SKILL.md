@@ -89,7 +89,7 @@ The pattern: `scene_boundaries[] → segment_ids[] → process each segment inde
 ## Case 1 — SINGLE FACE
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/qa_reframe_v2.py INPUT OUTPUT \
+python ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/qa_reframe_v2.py INPUT OUTPUT \
     --preset {talking-head | stage | split-top | guest | podcast} [--res 1080|4k]
 ```
 
@@ -128,13 +128,13 @@ If no scene changes are detected, falls through to the normal single-piece refra
 
 ```bash
 # Auto for podcast preset:
-python3 qa_reframe_v2.py input.mp4 output.mp4 --preset podcast --res 1080
+python qa_reframe_v2.py input.mp4 output.mp4 --preset podcast --res 1080
 
 # Explicit on any preset:
-python3 qa_reframe_v2.py input.mp4 output.mp4 --preset guest --scene-split --res 1080
+python qa_reframe_v2.py input.mp4 output.mp4 --preset guest --scene-split --res 1080
 
 # Disable for podcast if source is genuinely single-angle:
-python3 qa_reframe_v2.py input.mp4 output.mp4 --preset podcast --no-scene-split --res 1080
+python qa_reframe_v2.py input.mp4 output.mp4 --preset podcast --no-scene-split --res 1080
 ```
 
 **PROVED 2026-06-10:** 6/15 clips from PeaceOrPower had camera switches (3–5 segments each). Without scene-split, the X tracker slid between speakers on every cut. With scene-split, each segment locks independently = clean hard cuts between angles. **Architecture note:** v1 split-then-concat (triple encode) produced glitch frames at boundaries; v2 single-pass (reset tracker at boundary frames) eliminated them.
@@ -166,7 +166,7 @@ Graceful fallback: if no face found in ROI for the whole clip, holds a static cr
 For ANY 2-person split-screen (podcast, interview, debate, reaction — anything that isn't a Q&A workshop stage):
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/split_facetracked.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/split_facetracked.py \
     --top host.mp4 --bottom guest.mp4 --out split.mp4
 ```
 
@@ -207,7 +207,7 @@ A 720p source CANNOT produce a sharp 1080p vertical no matter what tool/zoom you
 |---|---|---|
 | `vertical-reframer` | `_archive/2026-06-08_facetracking_consolidation/` | Step-function crop, snaps every 1–4s. Deprecated 2026-06-04. |
 | `qa_reframe_stage.py` | (in scripts/, deprecation note added — its callers still work via the symlink) | Earlier "canonical" mistake. No Y-lock, nose-only tracking. Produces visible micro-jitter on stationary subjects. `qa_reframe_v2.py` supersedes it. |
-| Old Haar `reframe.sh` + `detect_face_dense.py` + `reframe_h2v.py` + `reframe_yunet.py` | (in scripts/, legacy fallback) | All predate the Y-lock + xcenter-box discovery. qa_reframe_v2 is strictly better. |
+| Old Haar `reframe.py` + `detect_face_dense.py` + `reframe_h2v.py` + `reframe_yunet.py` | (in scripts/, legacy fallback) | All predate the Y-lock + xcenter-box discovery. qa_reframe_v2 is strictly better. |
 
 ## Verification rule
 

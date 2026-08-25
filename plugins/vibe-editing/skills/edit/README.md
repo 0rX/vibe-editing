@@ -20,7 +20,7 @@ Two branch points: **speaker count** (1 vs 2) and **camera count** (1 vs multi).
 
 ## Outputs
 
-Finished clips in `~/Downloads/<brand>/YYYY-MM-DD_<slug>/20_DELIVER/`, Brand-named.
+Finished clips in `%USERPROFILE%/Videos/vibe-editing/<brand>/YYYY-MM-DD_<slug>/20_DELIVER/`, Brand-named.
 
 ## Downstream skills (this skill orchestrates, they own their capability)
 

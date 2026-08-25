@@ -140,7 +140,7 @@ The look = the team's spice-caption pipeline. **Symptoms each wrong turn gives**
 - **One change = re-verify THAT change (envelope + ear) BEFORE showing.** Never hand back a "fix" that's secretly worse — that's how you turn one round into five.
 - **When the user flags a problem, FIX it directly** — don't circle on options/explanations. Change → verify → show.
 - **Diagnose on the transcript + word timings**, not by guessing. Pull exact `word.start/end` to locate a bad seam.
-- **Folders:** one project = one folder **under the client** (`~/Downloads/<client>/<date>_<title>/`): COPY raw → `00_SOURCE/`, all renders/versions → `10_WORK/`, ONLY the finished Brand-named clip → `20_DELIVER/`.
+- **Folders:** one project = one folder **under the client** (`%USERPROFILE%/Videos/vibe-editing/<client>/<date>_<title>/`): COPY raw → `00_SOURCE/`, all renders/versions → `10_WORK/`, ONLY the finished Brand-named clip → `20_DELIVER/`.
 
 ## Clean splices — SNAP every cut to inter-word silence (LOCKED 2026-06-12, Speaker PeaceOrPower)
 The #1 audio complaint = cuts landing mid-word + clicks/pops at the joins. Root cause: **ASR word-label
@@ -155,6 +155,6 @@ RULES (now enforced by `_shared/faded_trim_cut.py`):
 4. First word: snap to its ACOUSTIC ONSET so a fused preceding word ("So when…") isn't dragged in.
 5. **fps**: `_shared/precision_cut.py` forces 30fps → unusable on 23.976/other sources (drift, borked
    audio). Use `_shared/faded_trim_cut.py` which PROBES & preserves the source fps.
-Cutter: `python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/faded_trim_cut.py spans.json out.mp4 --source <src.mp4>
+Cutter: `python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/faded_trim_cut.py spans.json out.mp4 --source <src.mp4>
    --words <transcript.words.json>` ; spans = `{"spans":[{"a":<startWordIdx>,"b":<endWordIdx>}, ...]}`.
 VERIFY before delivery: per-cut pre/post RMS both ≤ ~-28dB (in silence) + boundary sample-jump < 0.15.

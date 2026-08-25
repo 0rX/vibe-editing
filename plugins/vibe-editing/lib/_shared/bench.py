@@ -20,7 +20,7 @@ Usage:
     python3 $VIBE_PIPELINE_ROOT/lib/_shared/bench.py --skip-sw          # skip the slow libx264 baseline
     python3 $VIBE_PIPELINE_ROOT/lib/_shared/bench.py --json             # machine-readable
 
-Writes intermediate files to /tmp/_acq_bench/ (cleaned up at end).
+Writes intermediate files to the scratch dir (winenv.work_dir), cleaned up at end.
 """
 # ── vibe-editing portable path bootstrap (auto-inserted) ──
 import os as _os, sys as _sys
@@ -49,6 +49,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import work_dir  # noqa: E402
 import argparse
 import json
 import os
@@ -61,17 +62,12 @@ from pathlib import Path
 sys.path.insert(0, VIBE_SHARED)
 from fast_encode import encoder_args
 
-WORK = Path("/tmp/_acq_bench")
+WORK = work_dir("_acq_bench")
 
 
 def _ffmpeg():
     # Prefer ffmpeg-full (has all filters / libass), fall back to system ffmpeg.
     import glob as _g
-    for pat in ("/opt/homebrew/Cellar/ffmpeg-full/*/bin/ffmpeg",
-                "/usr/local/Cellar/ffmpeg-full/*/bin/ffmpeg"):
-        hits = sorted(_g.glob(pat))
-        if hits:
-            return hits[-1]
     return shutil.which("ffmpeg") or "ffmpeg"
 
 

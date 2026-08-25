@@ -12,6 +12,14 @@ Config:
                                 #     Mutually exclusive with head_trim (pad wins if both >0).
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os2, sys as _sys2
+_d2 = _os2.path.dirname(_os2.path.abspath(__file__))
+while _d2 != _os2.path.dirname(_d2) and not _os2.path.isdir(_os2.path.join(_d2, '.claude-plugin')):
+    _d2 = _os2.path.dirname(_d2)
+_sys2.path.insert(0, _os2.path.join(_d2, 'lib', '_shared'))
+from fast_encode import encoder_args_bitrate  # noqa: E402
+# ── end winenv bootstrap ──
 
 from _util import run as ff
 
@@ -31,19 +39,19 @@ def run(work_dir, config, inputs, inputs_meta, project, manifest, out_path):
               f"[0:a]adelay={ms}|{ms}[a]")
         ff(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", prior,
             "-filter_complex", fc, "-map", "[v]", "-map", "[a]",
-            "-c:v", "h264_videotoolbox", "-b:v", "12M", "-tag:v", "avc1", "-pix_fmt", "yuv420p",
+            *encoder_args_bitrate("12M"),
             "-c:a", "aac", "-b:a", "192k", "-map_metadata", "-1", "-movflags", "+faststart", str(out_path)])
     elif trim <= 0:
         # No trim — just re-encode at delivery bitrate
         ff(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", prior,
-            "-c:v", "h264_videotoolbox", "-b:v", "12M", "-tag:v", "avc1", "-pix_fmt", "yuv420p",
+            *encoder_args_bitrate("12M"),
             "-c:a", "aac", "-b:a", "192k", "-map_metadata", "-1", "-movflags", "+faststart", str(out_path)])
     else:
         fc = (f"[0:v]trim=start={trim},setpts=PTS-STARTPTS[v];"
               f"[0:a]atrim=start={trim},asetpts=PTS-STARTPTS[a]")
         ff(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", prior,
             "-filter_complex", fc, "-map", "[v]", "-map", "[a]",
-            "-c:v", "h264_videotoolbox", "-b:v", "12M", "-tag:v", "avc1", "-pix_fmt", "yuv420p",
+            *encoder_args_bitrate("12M"),
             "-c:a", "aac", "-b:a", "192k", "-map_metadata", "-1", "-movflags", "+faststart", str(out_path)])
 
     return {"out": str(out_path), "meta": {"head_trim": trim}}

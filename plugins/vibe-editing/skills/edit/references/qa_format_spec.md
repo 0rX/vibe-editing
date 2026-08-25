@@ -56,7 +56,7 @@ Both speakers: **Montserrat, size 80**, text box **150** (avoid UI cutoff), **ce
 3. **Caption validation** — confirm guest-yellow-italic / Speaker-white across clips; note exceptions.
 4. **Per-angle examples** + title-card frequency/placement.
 
-Source PDFs: `~/Downloads/...ExampleQA_SF_Editing_Structure.pdf`, `~/Downloads/...ExampleQA_SF_Visual_Guide.pdf`.
+Source PDFs: `%USERPROFILE%/Videos/vibe-editing/...ExampleQA_SF_Editing_Structure.pdf`, `%USERPROFILE%/Videos/vibe-editing/...ExampleQA_SF_Visual_Guide.pdf`.
 Existing engine: `scripts/make_qa_captions.py` (dual guest/Speaker styles — align to §5).
 
 ---

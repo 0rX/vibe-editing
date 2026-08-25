@@ -31,7 +31,7 @@ I used it recently?* If it doesn't match, or I've leaned on it lately — pick a
    alternate, or if the song's instrumental CORE is clean, OFFSET the music start past the spoken intro
    (e.g. øneheart "Snowfall" → start at 24s). Blacklist the contaminated file. (Learned: Speaker DGL, Snowfall.)
 
-7. **USE THE CALIBRATED MATCHER — don't hand-pick.** Run `python3 ~/.claude/skills/_shared/pick_music.py
+7. **USE THE CALIBRATED MATCHER — don't hand-pick.** Run `python ~/.claude/skills/_shared/pick_music.py
    --folder "(1) Calm"` — it ranks tracks by similarity to the centroid of `_APPROVED.txt` (your proven
    taste), excluding `MUSIC_BLACKLIST.txt` + already-used. Hand-picking "good but doesn't match" tracks
    failed ~7× in a row (Speaker PeaceOrPower); the matcher landed once calibrated. When Operator approves a

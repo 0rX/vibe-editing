@@ -29,7 +29,7 @@ ffmpeg -hide_banner -nostats -i INPUT \
 ffmpeg -y -i INPUT \
   -ss START -to END \
   -vf "subtitles=SUBS.ass:fontsdir=FONTS_DIR" \
-  -c:v h264_videotoolbox -b:v 14M -tag:v avc1 -pix_fmt yuv420p \
+  -c:v the hardware encoder chosen by fast_encode -b:v 14M -tag:v avc1 -pix_fmt yuv420p \
   -c:a aac -b:a 192k \
   -movflags +faststart \
   OUTPUT
@@ -37,7 +37,7 @@ ffmpeg -y -i INPUT \
 
 - `-ss` before `-i` is faster but less accurate; after `-i` is frame-accurate. We put it after because clip boundaries need to be precise.
 - `fontsdir` makes FFmpeg load the fonts in that folder without them needing to be installed system-wide — critical for making the skill shippable.
-- `-c:v h264_videotoolbox` — Brand fast-render standard: Apple hardware H.264, ~4x faster than libx264 and off-CPU. `-b:v` is the resolution-aware bitrate (14M for 1080p, 50M for 4K); Python callers should use `_shared/fast_encode.py` `encoder_args()` so it's picked automatically. libx264 `-crf` is reserved for archival masters (`tier='master'`).
+- `-c:v the hardware encoder chosen by fast_encode` — Brand fast-render standard: hardware H.264 (NVENC / Quick Sync / AMF), ~4x faster than libx264 and off-CPU. `-b:v` is the resolution-aware bitrate (14M for 1080p, 50M for 4K); Python callers should use `_shared/fast_encode.py` `encoder_args()` so it's picked automatically. libx264 `-crf` is reserved for archival masters (`tier='master'`).
 - `-movflags +faststart` — moves MOOV atom to the front so the file streams/seeks instantly when uploaded.
 
 ## Fontconfig gotcha

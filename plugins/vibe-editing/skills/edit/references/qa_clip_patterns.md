@@ -95,7 +95,7 @@ The short = guest states business + number + constraint → Speaker's first prob
 ## Provenance
 
 - `the source-map` (a local database, brand `your-brand`): 1,110 short↔source pairs, 806 verbatim + 304 semantic, 451 distinct Highlights sources. Source = Highlights highlight channel (1,646 transcribed Q&A highlights).
-- Build scripts + raw analysis: `~/Downloads/speaker/2026-06-14_Tier1-QA-PatternAnalysis/` (10_WORK: the source-map.json, editorial_learnings.json, business_cutdiff.json, finished_editorial.json).
+- Build scripts + raw analysis: `%USERPROFILE%/Videos/vibe-editing/speaker/2026-06-14_Tier1-QA-PatternAnalysis/` (10_WORK: the source-map.json, editorial_learnings.json, business_cutdiff.json, finished_editorial.json).
 
 ---
 

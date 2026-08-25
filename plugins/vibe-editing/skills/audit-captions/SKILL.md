@@ -16,14 +16,14 @@ description: >
 ## How to run
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/audit-captions/scripts/check.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/audit-captions/scripts/check.py \
     --clip 20_DELIVER/v1/clip.mp4 \
     --out 10_WORK/audit_captions.json
 ```
 
 If the clip has a corresponding `.ass` subtitle file in `10_WORK/`, pass it:
 ```bash
-python3 ... --ass 10_WORK/captions.ass
+python ... --ass 10_WORK/captions.ass
 ```
 
 ## What it checks

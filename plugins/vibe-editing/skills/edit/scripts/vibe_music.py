@@ -74,6 +74,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import ffmpeg_bin  # noqa: E402
 import argparse
 import glob
 import json
@@ -87,9 +88,7 @@ import time
 from pathlib import Path
 
 
-FFMPEG = sorted(glob.glob("/opt/homebrew/Cellar/ffmpeg-full/*/bin/ffmpeg"))[0] \
-         if glob.glob("/opt/homebrew/Cellar/ffmpeg-full/*/bin/ffmpeg") \
-         else shutil.which("ffmpeg") or "ffmpeg"
+FFMPEG = ffmpeg_bin("ffmpeg")
 FFPROBE = str(Path(FFMPEG).parent / "ffprobe")
 
 # Brand FAST-RENDER STANDARD — VideoToolbox HW encode (~4x), resolution-aware single source of truth.
@@ -120,15 +119,15 @@ Output exactly ONE label, nothing else:
 
 
 def load_zshrc_api_keys():
-    """Lift API_KEY/TOKEN exports from ~/.zshrc into os.environ."""
-    zshrc = Path.home() / ".zshrc"
-    if not zshrc.exists():
-        return
-    for line in zshrc.read_text().splitlines():
-        m = re.match(r'^\s*export\s+([A-Z_][A-Z0-9_]*)=(.*)$', line)
-        if m and ("API_KEY" in m.group(1) or "TOKEN" in m.group(1)):
-            val = m.group(2).strip().strip('"').strip("'")
-            os.environ.setdefault(m.group(1), val)
+    """Historical name, kept so existing call sites still work.
+
+    On macOS this lifted `export FOO_API_KEY=...` lines out of ~/.zshrc. Windows has no
+    shell rc file; keys now come from the environment or config/keys.env, which the
+    bundled-keys autoload at the top of this file already reads. Nothing left to do.
+    """
+    return None
+
+
 
 
 def classify_vibe(transcript_text: str) -> str:

@@ -42,16 +42,16 @@ Final stage's output is copied to `20_DELIVER/v<N>/<Brand-named>.mp4`.
 
 ```bash
 # First render of a new clip
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir>
+python ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir>
 
 # Revise — engine auto-detects which source changed and rebuilds from there
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir>
+python ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir>
 
 # Force re-render from a specific stage (skip cache from this stage forward)
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir> --from captions
+python ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir> --from captions
 
 # Deliver to a new version folder (default: v1; bumps if --bump)
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir> --bump
+python ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir> --bump
 ```
 
 ## Pipelines
@@ -111,7 +111,7 @@ See `manifest_example.json` for a working example. Required keys:
      ROI-restricted qa_reframe_v2 tiles + h2v `make_splitscreen.py --width 2160`, spliced in
      frame-exactly; audio passes through untouched. Set each tile's `roi` from the MEASURED
      face positions in the wide shot — wrong ROI = silent ROI-center fallback, tile shows furniture.)
-3. `python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project>`
+3. `python ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project>`
 4. Engine rebuilds from the changed stage forward; ALL upstream stages cache-hit (instant)
 5. New deliverable lands in `20_DELIVER/v<N>/`
 

@@ -31,7 +31,7 @@ portable principle/quantified result · compressed (no detour after the answer) 
 ## Run it (a cycle)
 ```
 # 1. cut with the self-correcting designer (won't emit until it passes the gate)
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/cut_design.py --raw <guest_raw.txt> --precontext "<earlier intro>"
+python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/cut_design.py --raw <guest_raw.txt> --precontext "<earlier intro>"
 # 2. human review → approve or reject
 #    approve → paste the cut into qa_worked_examples.md with a beat-by-beat why + score
 #    reject  → add the reason as a rule in qa_editorial_score.py RULESET (or a gate in qa_prebuild_audit)

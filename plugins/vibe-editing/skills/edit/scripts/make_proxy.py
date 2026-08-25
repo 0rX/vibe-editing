@@ -35,6 +35,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import FFMPEG_INSTALL_HINT, ffmpeg_bin  # noqa: E402
 import argparse
 import glob
 import os
@@ -48,10 +49,10 @@ from fast_encode import encoder_args  # Brand fast-render standard
 
 
 def find_ffmpeg() -> str:
-    for c in [shutil.which("ffmpeg")] + sorted(glob.glob("/opt/homebrew/Cellar/ffmpeg*/*/bin/ffmpeg")):
+    for c in [ffmpeg_bin("ffmpeg")]:
         if c and Path(c).exists():
             return c
-    sys.exit("ffmpeg not found — brew install ffmpeg")
+    sys.exit(FFMPEG_INSTALL_HINT)
 
 
 def main():

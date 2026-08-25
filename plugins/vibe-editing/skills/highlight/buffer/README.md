@@ -16,7 +16,7 @@ hardcoded.
    - `export BUFFER_TOKEN='your-token'` (or `echo … > ~/.config/buffer/api_key`)
 
 2. **Your channel id** (the YouTube channel/profile you post to)
-   - `python3 fill_queue.py discover` → copy the id of the channel you want
+   - `python fill_queue.py discover` → copy the id of the channel you want
    - `export BUFFER_CHANNEL_ID='<id>'` (or `echo … > ~/.config/buffer/channel_id`)
 
 3. **Storage for public URLs** (Supabase Storage, or any S3-style public bucket)
@@ -31,13 +31,13 @@ Install deps: `pip install -r requirements.txt` (plus `ffmpeg` on PATH for `ffpr
 ## Usage
 
 ```bash
-python3 fill_queue.py discover                 # find YOUR channel id
-python3 fill_queue.py slots                    # preview scheduling slots
-python3 fill_queue.py fill --dry-run           # preview what WOULD be queued
-python3 fill_queue.py fill --total 10          # queue up to 10 shorts
-python3 fill_queue.py fill --dir ~/clips       # scan a specific folder
-python3 fill_queue.py fill --order name        # filename order instead of newest-first
-python3 fill_queue.py fill --video-url URL --total 1   # queue a pre-hosted clip
+python fill_queue.py discover                 # find YOUR channel id
+python fill_queue.py slots                    # preview scheduling slots
+python fill_queue.py fill --dry-run           # preview what WOULD be queued
+python fill_queue.py fill --total 10          # queue up to 10 shorts
+python fill_queue.py fill --dir ~/clips       # scan a specific folder
+python fill_queue.py fill --order name        # filename order instead of newest-first
+python fill_queue.py fill --video-url URL --total 1   # queue a pre-hosted clip
 ```
 
 ## How it picks clips

@@ -27,6 +27,7 @@ Each span: start snaps to the silence just before word a; end snaps to the silen
 """
 import argparse, json, os, subprocess, tempfile, shutil
 import numpy as np, librosa
+from fast_encode import encoder_args_bitrate  # sibling module in lib/_shared
 
 SRC = None; words = None; FADE = 0.012
 def t0(i): x = words[i]; return x.get("start", x.get("s", 0.0))
@@ -105,12 +106,12 @@ def main():
         print(f"  span {i}: [{sp['a']}->{sp['b']}] {ss:.3f}->{to:.3f} ({dur:.2f}s)")
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{ss:.4f}", "-i", SRC, "-t", f"{dur:.4f}",
             "-af", f"afade=t=in:st=0:d={FADE},afade=t=out:st={max(0,dur-FADE):.4f}:d={FADE}",
-            "-r", fps, "-vsync", "cfr", "-c:v", "h264_videotoolbox", "-b:v", "16M",
+            "-r", fps, "-vsync", "cfr", *encoder_args_bitrate("16M"),
             "-c:a", "aac", "-b:a", "192k", "-ar", "44100", "-video_track_timescale", ts, seg], check=True)
         parts.append(seg)
     lst = os.path.join(tmp, "list.txt"); open(lst, "w").write("".join(f"file '{p}'\n" for p in parts))
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst,
-        "-r", fps, "-vsync", "cfr", "-c:v", "h264_videotoolbox", "-b:v", "16M",
+        "-r", fps, "-vsync", "cfr", *encoder_args_bitrate("16M"),
         "-c:a", "aac", "-b:a", "192k", "-ar", "44100", "-video_track_timescale", ts, a.out], check=True)
     print(f"  -> {a.out}")
     shutil.rmtree(tmp, ignore_errors=True)

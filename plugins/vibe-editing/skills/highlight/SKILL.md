@@ -60,13 +60,13 @@ questions; never optimize for CTR).
 Use Groq `whisper-large-v3` (free tier) with a local `faster-whisper` fallback — the same
 pattern the rest of the kit uses:
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/transcribe_lv3.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/transcribe_lv3.py \
     <recording> --start <S> --end <E> --out <work>/words.json
 ```
 No `GROQ_API_KEY`? It automatically falls back to local `faster-whisper` (`pip install
 faster-whisper`). Then diarize host vs guest:
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/highlight/scripts/highlight_diarize.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/highlight/scripts/highlight_diarize.py \
     --words <work>/words.json --host-mic A.wav --guest-mic B.wav \
     --prior prior.json --seg-start 0 --out <work>/edl.json
 ```
@@ -81,7 +81,7 @@ The mids are **already uploaded as drafts** on the user's channel. Title + sched
 the subs-optimized rules, via the **YouTube Data API v3** using the user's OWN Google sign-in:
 
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/highlight/scripts/highlight_post.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/highlight/scripts/highlight_post.py \
     --channel-id YOUR_CHANNEL_ID [--limit N] [--slots 12:00,18:00] [--tz America/Los_Angeles]
 ```
 This:
@@ -113,9 +113,9 @@ filter, and queue each to the user's channel on a schedule via the **Buffer API*
 only — no cutting. (MINE/POST above handle the 16:9 mids.)
 
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/highlight/buffer/fill_queue.py discover    # find their channel id
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/highlight/buffer/fill_queue.py fill --dry-run
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/highlight/buffer/fill_queue.py fill --total 10
+python ${CLAUDE_PLUGIN_ROOT}/skills/highlight/buffer/fill_queue.py discover    # find their channel id
+python ${CLAUDE_PLUGIN_ROOT}/skills/highlight/buffer/fill_queue.py fill --dry-run
+python ${CLAUDE_PLUGIN_ROOT}/skills/highlight/buffer/fill_queue.py fill --total 10
 ```
 Scans a folder (`--dir`, env `VIBE_SHORTS_DIR`, else the deliver folder); keeps clips with audio
 at 10–180s; never queues the same clip twice (local ledger); caps at `VIBE_BUFFER_DAILY_CAP`
@@ -164,7 +164,7 @@ Selection + title weights ship as starter defaults. To make them yours: export y
 Studio table (`Content / Views / Impressions CTR / Subscribers / …` as `Table data.csv`) and
 import it to measure your real `subs_per_1k_views`, then re-rank `config/patterns.json`:
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/highlight/scripts/highlight_studio_import.py \
-    --csv ~/Downloads/"Table data.csv" --out <work>/studio.json   # preview; add --write-db to persist
+python ${CLAUDE_PLUGIN_ROOT}/skills/highlight/scripts/highlight_studio_import.py \
+    --csv %USERPROFILE%/Videos/vibe-editing/"Table data.csv" --out <work>/studio.json   # preview; add --write-db to persist
 ```
 That closes the loop: post → measure your subscriber conversion → re-weight → mine better.

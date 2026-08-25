@@ -17,7 +17,7 @@ SEGMENTER-X's known limitation: a 90-min transcript blows the single-pass token 
 just errors and tells you to split the video). We FIX that here by windowing the transcript into
 ~25-30 min chunks, segmenting each, then merging with offset-corrected line indices + timestamps.
 
-Claude-call pattern (SDK with `claude -p` CLI fallback, key from env or ~/.zshrc) is reused verbatim
+Claude-call pattern (SDK with `claude -p` CLI fallback, key from env or config/keys.env) is reused verbatim
 from tam_select.py so this needs no new dependency beyond Anthropic.
 
 Input  : a long-form transcript — our JSON ({"segments":[{"start","end","text"[,"words"]}]}) or .txt
@@ -27,6 +27,14 @@ Output : <out>.segments.json = {"exchanges":[{start,end,title,summary,is_filler,
 Usage  : python3 tam_segment.py --transcript session.json --window-min 28 --out ~/Downloads/sess
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os5, sys as _sys5
+_d5 = _os5.path.dirname(_os5.path.abspath(__file__))
+while _d5 != _os5.path.dirname(_d5) and not _os5.path.isdir(_os5.path.join(_d5, '.claude-plugin')):
+    _d5 = _os5.path.dirname(_d5)
+_sys5.path.insert(0, _os5.path.join(_d5, 'lib', '_shared'))
+from winenv import read_key  # noqa: E402
+# ── end winenv bootstrap ──
 # ── engine bundled-keys autoload (config/keys.env) ──
 import os as _ko, pathlib as _kp
 def _acq_load_keys():
@@ -50,21 +58,14 @@ from pathlib import Path
 PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "tam_segment.md"
 
 # ----------------------------------------------------------------------------------------------
-# Claude call — copied from tam_select.py (SDK first, claude CLI fallback, key from env/~/.zshrc).
+# Claude call — copied from tam_select.py (SDK first, claude CLI fallback, key from env/config/keys.env).
 # ----------------------------------------------------------------------------------------------
 
 def get_key() -> str | None:
     k = os.environ.get("ANTHROPIC_API_KEY")
     if k:
         return k
-    try:
-        z = (Path.home() / ".zshrc").read_text()
-        m = re.search(r"sk-ant-[A-Za-z0-9_\-]+", z)
-        if m:
-            return m.group(0)
-    except Exception:
-        pass
-    return None
+    return read_key("ANTHROPIC_API_KEY") or None
 
 
 def call_claude(system: str, user: str, max_tokens: int = 16000) -> str:

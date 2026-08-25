@@ -64,7 +64,7 @@ baked footage.** That is why the Visual Guide's two grade presets are marked "mi
 
 ## Build it
 ```bash
-python3 scripts/qa_assembly.py --edl EDL.json --out clip.mp4 --sync SYNC.json --no-captions --keep-temp
+python scripts/qa_assembly.py --edl EDL.json --out clip.mp4 --sync SYNC.json --no-captions --keep-temp
 ```
 Reframe masters are cached **content-addressed** (by cam+range+framing+reframer-version) in a SHARED
 `_qa_mastercache/` next to the output — so they survive across output names AND revisions. A revision that

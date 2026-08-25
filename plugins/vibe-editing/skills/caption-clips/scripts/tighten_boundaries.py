@@ -17,6 +17,14 @@ Boundaries JSON schema (input/output):
     { "clips": [ {"index": 0, "start": float, "end": float}, ... ] }
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os3, sys as _sys3
+_d3 = _os3.path.dirname(_os3.path.abspath(__file__))
+while _d3 != _os3.path.dirname(_d3) and not _os3.path.isdir(_os3.path.join(_d3, '.claude-plugin')):
+    _d3 = _os3.path.dirname(_d3)
+_sys3.path.insert(0, _os3.path.join(_d3, 'lib', '_shared'))
+from winenv import work_dir  # noqa: E402
+# ── end winenv bootstrap ──
 import argparse, json, subprocess, sys
 from pathlib import Path
 from PIL import Image
@@ -26,7 +34,7 @@ def find_last_bright_frame(source: str, scan_start: float, scan_end: float,
                             fps: int = 60, threshold: float = 20.0) -> int | None:
     """Decode [scan_start, scan_end] at `fps` and return idx of last frame with
     mean luma > threshold. None if all frames are dark."""
-    work = Path('/tmp/_tighten_scan')
+    work = work_dir('_tighten_scan')
     work.mkdir(exist_ok=True)
     for f in work.glob('*.jpg'):
         f.unlink()
@@ -48,7 +56,7 @@ def find_last_bright_frame(source: str, scan_start: float, scan_end: float,
 
 def find_first_bright_frame(source: str, scan_start: float, scan_end: float,
                              fps: int = 60, threshold: float = 20.0) -> int | None:
-    work = Path('/tmp/_tighten_scan')
+    work = work_dir('_tighten_scan')
     work.mkdir(exist_ok=True)
     for f in work.glob('*.jpg'):
         f.unlink()

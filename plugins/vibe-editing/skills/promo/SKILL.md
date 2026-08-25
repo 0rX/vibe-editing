@@ -9,8 +9,8 @@ Makes two kinds of premium branded video. Powered by Remotion (React-based video
 
 ## 🎬 PICK THE MODE FIRST (ask the user if it's not obvious)
 
-- **MODE A — ANIMATED EXPLAINER / DEMO.** Fully animated, no real long-form footage as the spine. Deck demos, feature launches, the content-flywheel video, SaaS promos, branded explainers. → built from `templates/glass/` (premium liquid-glass) or `templates/saas/`. See the **glass** section below. *Worked example: `~/Downloads/engine/2026-06-12_WorkflowDemo` (the FlywheelFilm composition).*
-- **MODE B — ARCHIVE / ORIGIN-STORY FILM.** The user hands you a long **assembly cut** (their own edit — real footage, chapters separated by black frames) and wants it turned into a branded film: chapter cards between sections, scene-matched music per chapter, flash transitions, and a growth-curve payoff. → era cards + `assemble.py`. See the **MODE B** section below. *Worked example: `~/Downloads/engine/2026-06-14_BrandHistory` (a "4.5 years in ~5 minutes" origin film).*
+- **MODE A — ANIMATED EXPLAINER / DEMO.** Fully animated, no real long-form footage as the spine. Deck demos, feature launches, the content-flywheel video, SaaS promos, branded explainers. → built from `templates/glass/` (premium liquid-glass) or `templates/saas/`. See the **glass** section below. *Worked example: `%USERPROFILE%/Videos/vibe-editing/engine/2026-06-12_WorkflowDemo` (the FlywheelFilm composition).*
+- **MODE B — ARCHIVE / ORIGIN-STORY FILM.** The user hands you a long **assembly cut** (their own edit — real footage, chapters separated by black frames) and wants it turned into a branded film: chapter cards between sections, scene-matched music per chapter, flash transitions, and a growth-curve payoff. → era cards + `assemble.py`. See the **MODE B** section below. *Worked example: `%USERPROFILE%/Videos/vibe-editing/engine/2026-06-14_BrandHistory` (a "4.5 years in ~5 minutes" origin film).*
 
 Both modes share the same brand-tokenized glass kit (sting, `GlassBG`, era cards, growth curve, brand `constants.ts`), so they look like one family. **Rebrand per brand in `constants.ts` + `public/` logos — never hard-code a brand name into a component.**
 
@@ -35,7 +35,7 @@ See [`templates/saas/README.md`](templates/saas/README.md) for wiring + brand cu
 
 ## 🟣 PREMIUM LIQUID-GLASS DEMO / EXPLAINER VIDEOS — `templates/glass/`
 
-The system behind the high-end, brand-native "holy shit" presentation video (the kind that drops into a slide deck as a live demo). Use this — not the saas templates — when the brief is **a polished, deck- or concept-driven explainer/demo** with real footage, real product UI, and bold on-screen text instead of a voiceover. Worked example: `~/Downloads/engine/2026-06-12_WorkflowDemo` (the `FlywheelFilm` composition — a content-flywheel demo). **1920×1080 @ 30fps, bold lower-thirds, no VO.**
+The system behind the high-end, brand-native "holy shit" presentation video (the kind that drops into a slide deck as a live demo). Use this — not the saas templates — when the brief is **a polished, deck- or concept-driven explainer/demo** with real footage, real product UI, and bold on-screen text instead of a voiceover. Worked example: `%USERPROFILE%/Videos/vibe-editing/engine/2026-06-12_WorkflowDemo` (the `FlywheelFilm` composition — a content-flywheel demo). **1920×1080 @ 30fps, bold lower-thirds, no VO.**
 
 > **BRAND-AGNOSTIC.** The kit is brand-tokenized. Set the brand in `src/constants.ts` (`COLORS` + font) and drop the brand's logo PNGs in `public/`. The example uses **Speaker / company.com** (Sambucus `#131628`, Electric Indigo `#6f00ff`, Lavender `#a08bec`, Poppins) — swap those tokens per brand; never hard-code a brand name into a component.
 
@@ -81,7 +81,7 @@ The system behind the high-end, brand-native "holy shit" presentation video (the
 
 ## 🧊 3D + 2.5D PARALLAX + ☁️ CLOUD SCALE (MODE A power-ups)
 
-Worked example: `~/Downloads/_PROJECTS/2026-06-15_3DSaasDemo` (a a sample SaaS demo — parallax hero, floating glass dashboard cards, 3D bar chart + a true-WebGL variant).
+Worked example: `%USERPROFILE%/Videos/vibe-editing/_PROJECTS/2026-06-15_3DSaasDemo` (a a sample SaaS demo — parallax hero, floating glass dashboard cards, 3D bar chart + a true-WebGL variant).
 
 ### 3D — two paths
 - **CSS 3D (default, no deps, renders anywhere).** Wrap a scene in `perspective` + `transformStyle:'preserve-3d'`; place layers at different `translateZ` and animate the world's Z with `useCurrentFrame()` = a camera dolly where near layers move more than far (real 2.5D parallax). Floating glass cards, extruded bar charts (front/side/top faces), receding grid floors all come from CSS transforms. **Reach for this first** — it's bulletproof in headless Chrome.
@@ -95,7 +95,7 @@ For "lots of these" / 4K / batches: render on AWS Lambda (frames fan out massive
 
 ## 🎞️ MODE B — ARCHIVE / ORIGIN-STORY FILM (`assemble.py` + era cards + growth-curve payoff)
 
-The user hands over a long **assembly cut** (their own edit — real archive footage, chapters separated by BLACK frames) and wants it turned into a branded, deck-ready film: chapter CARDS between the sections, a different scene-matched music bed per chapter, flash transitions, and a climactic exponential GROWTH-CURVE payoff. 1920×1080 @ 30fps, no VO. *Worked example: `~/Downloads/engine/2026-06-14_BrandHistory` ("4.5 years in ~5 minutes").*
+The user hands over a long **assembly cut** (their own edit — real archive footage, chapters separated by BLACK frames) and wants it turned into a branded, deck-ready film: chapter CARDS between the sections, a different scene-matched music bed per chapter, flash transitions, and a climactic exponential GROWTH-CURVE payoff. 1920×1080 @ 30fps, no VO. *Worked example: `%USERPROFILE%/Videos/vibe-editing/engine/2026-06-14_BrandHistory` ("4.5 years in ~5 minutes").*
 
 > **BRAND-AGNOSTIC.** Cards + curve carry the brand via Remotion `constants.ts` (COLORS + font) + `public/` logos — swap per brand; never hard-code a name into a component. Per-film specifics (chapter titles, years, milestones, which sections get music) live in the PROJECT (`assemble.py` CONFIG + `Root.tsx` + `GrowthCurve.tsx` data), never in the skill.
 
@@ -107,13 +107,13 @@ The user hands over a long **assembly cut** (their own edit — real archive foo
 - **`scripts/wait_valid.py`** — wait for a still-uploading cut to finish writing before you touch it.
 
 ### The process (the order that works)
-1. **`new_project.sh <brand> <slug>`** (default brand `speaker`) → `00_SOURCE/ 10_WORK/ 20_DELIVER/`. Copy the cut into `00_SOURCE/` — if it's mid-upload, `wait_valid.py` it first (a partial mp4 reads as "moov atom not found").
+1. **`new_project.py <brand> <slug>`** (default brand `speaker`) → `00_SOURCE/ 10_WORK/ 20_DELIVER/`. Copy the cut into `00_SOURCE/` — if it's mid-upload, `wait_valid.py` it first (a partial mp4 reads as "moov atom not found").
 2. **Scaffold the Remotion project** in `10_WORK/` (copy `templates/glass/`; symlink `node_modules` from a sibling promo project to skip install). Set brand in `constants.ts`, logos in `public/`.
 3. **`detect_sections.py <cut>`** → chapter spans. Sample a frame from the middle of each span and identify each chapter.
 4. **🛑 CONFIRM chapter TITLES + YEARS with the user — dates are factual + Brand-facing, NEVER guess.** Wire the confirmed `{chapter, year, title, sub}` into `Root.tsx` (one EraCard per chapter) and the matching `{label, year}` into `GrowthCurve.tsx` `MILES`. Era-card year MUST equal the curve milestone year.
-5. **Pick music per chapter** with the calibrated matcher: `python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/pick_music.py --folder "(1) Calm" --used "<picks so far>"` (ranks by the user's `_APPROVED.txt` centroid, excludes `MUSIC_BLACKLIST.txt`). DISTINCT track per chapter, mood-matched, in the emotional/calm lane. Some chapters may want NO music or a barely-there bed (vol 0.05) — per-section call, ASK if unsure. Blacklist anything the user rejects (append to `MUSIC_BLACKLIST.txt` with their reason).
+5. **Pick music per chapter** with the calibrated matcher: `python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/pick_music.py --folder "(1) Calm" --used "<picks so far>"` (ranks by the user's `_APPROVED.txt` centroid, excludes `MUSIC_BLACKLIST.txt`). DISTINCT track per chapter, mood-matched, in the emotional/calm lane. Some chapters may want NO music or a barely-there bed (vol 0.05) — per-section call, ASK if unsure. Blacklist anything the user rejects (append to `MUSIC_BLACKLIST.txt` with their reason).
 6. **Render** the cards + curve: `npx remotion render Card0N out/Card0N.mp4 --codec=h264 --crf=18` (+ `GrowthCurve`).
-7. **`python3 assemble.py all`** → sections (graded + music) · cards (SFX) · payoff (flash-in) · concat + loudnorm → `10_WORK/build/film_assembled.mp4`.
+7. **`python assemble.py all`** → sections (graded + music) · cards (SFX) · payoff (flash-in) · concat + loudnorm → `10_WORK/build/film_assembled.mp4`.
 8. **QC by frames + measurement:** every chapter boundary lands on real content (no black bleed); each card shows the right title + YEAR; the curve milestone years are right (zoom in and READ them); snap + flash transitions intact; loudnorm OK / no clip; A/V durations match.
 9. **Deliver** to `20_DELIVER/` (local). NEVER push to Frame/Monday without explicit per-file permission.
 

@@ -47,6 +47,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import ffmpeg_bin  # noqa: E402
 import argparse
 import json
 import os
@@ -65,13 +66,11 @@ def find_ffmpeg() -> str:
     if os.environ.get("FFMPEG"):
         return os.environ["FFMPEG"]
     candidates = [shutil.which("ffmpeg")]
-    import glob as _glob
-    candidates.extend(sorted(_glob.glob("/opt/homebrew/Cellar/ffmpeg-full/*/bin/ffmpeg")))
-    candidates.extend(sorted(_glob.glob("/usr/local/Cellar/ffmpeg-full/*/bin/ffmpeg")))
+    candidates.append(ffmpeg_bin("ffmpeg"))
     for c in candidates:
         if c and Path(c).exists():
             return c
-    sys.stderr.write("No ffmpeg found on PATH. Install via: brew install ffmpeg-full\n")
+    sys.stderr.write("No ffmpeg found on PATH. Install via: winget install --id Gyan.FFmpeg-full\n")
     sys.exit(3)
 
 

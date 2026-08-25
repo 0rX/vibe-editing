@@ -8,10 +8,18 @@ BEFORE cutting — it answers "what's worth clipping", upstream of edit's cut st
 Input  : a transcript — our transcript JSON ({"segments":[{"start","end","text"}]}) or plain .txt
 Output : <out>.tam.json (ranked candidates) + <out>.tam.md (readable table)
 
-Auth   : ANTHROPIC_API_KEY (env, else sourced from ~/.zshrc). Falls back to the `claude -p` CLI.
+Auth   : ANTHROPIC_API_KEY (env, else config/keys.env). Falls back to the `claude -p` CLI.
 Usage  : python3 tam_select.py --transcript pod.json --top 10 --out ~/Downloads/pod
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os4, sys as _sys4
+_d4 = _os4.path.dirname(_os4.path.abspath(__file__))
+while _d4 != _os4.path.dirname(_d4) and not _os4.path.isdir(_os4.path.join(_d4, '.claude-plugin')):
+    _d4 = _os4.path.dirname(_d4)
+_sys4.path.insert(0, _os4.path.join(_d4, 'lib', '_shared'))
+from winenv import read_key  # noqa: E402
+# ── end winenv bootstrap ──
 # ── engine bundled-keys autoload (config/keys.env) ──
 import os as _ko, pathlib as _kp
 def _acq_load_keys():
@@ -60,14 +68,7 @@ def get_key() -> str | None:
     k = os.environ.get("ANTHROPIC_API_KEY")
     if k:
         return k
-    try:
-        z = (Path.home() / ".zshrc").read_text()
-        m = re.search(r"sk-ant-[A-Za-z0-9_\-]+", z)
-        if m:
-            return m.group(0)
-    except Exception:
-        pass
-    return None
+    return read_key("ANTHROPIC_API_KEY") or None
 
 
 def call_claude(system: str, user: str) -> str:

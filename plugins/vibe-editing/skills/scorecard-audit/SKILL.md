@@ -48,12 +48,12 @@ off to sf-audit's classical-CV + vision-MCP checks.
 
 ```bash
 # Minimum (auto-detects format from transcript density + duration)
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/scorecard-audit/scripts/scorecard.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/scorecard-audit/scripts/scorecard.py \
   --transcript /tmp/shortform-work/transcript.json \
-  --clip ~/Downloads/speaker-clip-v1.mp4
+  --clip %USERPROFILE%/Videos/vibe-editing/speaker-clip-v1.mp4
 
 # Full — wired with profile fields + autolog into clip-review-tracker
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/scorecard-audit/scripts/scorecard.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/scorecard-audit/scripts/scorecard.py \
   --transcript transcript.json --clip clip-v1.mp4 \
   --format qa \
   --client speaker --clip-slug pricing-rant \
@@ -102,7 +102,7 @@ precedents on the next similar one.
 
 ## Auth
 
-Uses `ANTHROPIC_API_KEY` from `~/.zshrc` via the Anthropic Python SDK (preferred). Falls
+Uses `ANTHROPIC_API_KEY` from `config/keys.env` via the Anthropic Python SDK (preferred). Falls
 back to `claude -p` if no key. Same setup as `correct_transcript.py`.
 
 ---

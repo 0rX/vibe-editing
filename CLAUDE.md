@@ -28,9 +28,9 @@ at `brand/cta/outro.mp4`. POST mode titles + schedules to the user's OWN YouTube
 Google sign-in — never any other account.
 
 ## First-time setup (only if it isn't set up yet)
-If `plugins/vibe-editing/.venv` is missing, or `python3 plugins/vibe-editing/doctor.py` reports
+If `plugins/vibe-editing/.venv` is missing, or `python plugins/vibe-editing/doctor.py` reports
 missing tools, set it up first: install only what's missing yourself (ffmpeg, yt-dlp, tesseract,
-rclone via Homebrew; a `.venv` with the kit's deps + faster-whisper). A free Groq key in
+rclone via winget; a `.venv` with the kit's deps + faster-whisper). A free Groq key in
 `plugins/vibe-editing/config/keys.env` makes transcription ~10× faster; without it, it uses free
 offline transcription. Full first-run + brand interview: **`ONBOARDING.md`**.
 

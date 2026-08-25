@@ -150,7 +150,7 @@ PRESET, not a hand-built file).
   at y58 (desk) / y60 (podcast); reserve the live per-angle analyzer only where per-shot height is truly wanted.
 
 **MUSIC** → **READ `content-skill-system/(1) Tik Tok/MUSIC_RULES.md` FIRST, then use THE CALIBRATED
-MATCHER: `python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/pick_music.py --folder "(1) Calm" --used "<batch picks>"`**
+MATCHER: `python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/pick_music.py --folder "(1) Calm" --used "<batch picks>"`**
 — it ranks tracks by similarity to the `_APPROVED.txt` centroid (the user's ear-proven lane),
 excluding `MUSIC_BLACKLIST.txt` + already-used. NEVER hand-pick by title, and do NOT use
 `vibe_music.py`'s `pick_track` as the chooser — it picks RANDOM from a vibe folder, ignoring the
@@ -201,7 +201,7 @@ clipping = waveform, not a re-transcript. Prove it on the REAL delivered file be
 
 > **Two layers — never conflate them:**
 > - **Skill layer** = `${CLAUDE_PLUGIN_ROOT}/skills/` — the live "brain" Claude actually runs. Skills load ONLY from here. NEVER relocate it; it is not, and cannot become, the GitHub folder.
-> - **Repo layer** = the GitHub copies you commit and share with the team. Project repos live in the user's `~/Documents/GitHub/` folder. (The `edit` skill is special: it lives in-place at `${CLAUDE_PLUGIN_ROOT}/skills/edit`, which is itself a git repo; the full pipeline is mirrored to a bundle repo via its `sync.sh`.)
+> - **Repo layer** = the GitHub copies you commit and share with the team. Project repos live in the user's `%USERPROFILE%/Documents/GitHub/` folder. (The `edit` skill is special: it lives in-place at `${CLAUDE_PLUGIN_ROOT}/skills/edit`, which is itself a git repo; the full pipeline is mirrored to a bundle repo via its `sync.sh`.)
 >
 > **The rule, every work session:**
 > 1. **Test the change locally as a skill FIRST.** Make the skill edit → apply it to a real video → confirm it works. NEVER commit broken or untested work.
@@ -250,7 +250,7 @@ clipping = waveform, not a re-transcript. Prove it on the REAL delivered file be
 > The #1 meta-failure: after round 1 passed, each revision (music swap, recut, the Y fix, a caption
 > tweak) was followed by checking ONLY the one thing changed. Regressions slipped through unaudited and
 > shipped. RULE: after ANY `engine.py` run — first build OR `--bump` revision — run
-> `python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/reqc.py <delivered.mp4>` (or `--batch <20_DELIVER/vN>`) on the
+> `python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/reqc.py <delivered.mp4>` (or `--batch <20_DELIVER/vN>`) on the
 > ACTUAL delivered file, and it must exit 0 before the clip is collected/shown. No exceptions, no "I
 > only changed the music so the cut is fine" — re-run the whole gate. reqc.py is the automated form of
 > the PER-CLIP QC LEDGER below.
@@ -394,7 +394,7 @@ Report each clip's opener + any fix BEFORE delivery: e.g. `AFewBadDays — opens
                       Gate 5: audit-captions (accuracy, speaker colors, timing, formatting, gaps)
                       Gate 6: audit-script (cold viewer, context→payoff, one-arc, hook, flow, brand safety)
 10. CONFIRM DELIVERY  20_DELIVER/v<N>/ exists; show user; await your review tool permission
-                      Optional: `python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/contact_sheet.py 20_DELIVER/v<N>/`
+                      Optional: `python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/contact_sheet.py 20_DELIVER/v<N>/`
                       emits CONTACT_SHEET.jpg (4-col grid of all thumbs, Q&A gold-labeled,
                       monologues white-labeled) so the human can scan the whole batch at a glance.
 ```
@@ -411,7 +411,7 @@ changed one forward.
 ## Step 0 — SCAFFOLD
 
 ### 0a. PREFLIGHT INTERVIEW (hard rule — 2026-06-12)
-Before running `new_project.sh`, INTERVIEW the user with 4 targeted questions. ASK them
+Before running `new_project.py`, INTERVIEW the user with 4 targeted questions. ASK them
 explicitly — do NOT infer from the Drive link, the filename, or memory. Inferring is exactly
 how wrong-folder / wrong-vibe misfires happen that only get caught at delivery.
 
@@ -436,8 +436,8 @@ nothing else.
 
 ```bash
 # 1) Project folders
-bash ${CLAUDE_PLUGIN_ROOT}/vault/scripts/new_project.sh <brand> <slug>
-# → ~/Downloads/<brand>/YYYY-MM-DD_<slug>/  (00_SOURCE/ 10_WORK/ 20_DELIVER/)
+python ${CLAUDE_PLUGIN_ROOT}/vault/scripts/new_project.py <brand> <slug>
+# → %USERPROFILE%/Videos/vibe-editing/<brand>/YYYY-MM-DD_<slug>/  (00_SOURCE/ 10_WORK/ 20_DELIVER/)
 
 # 2) INGEST the footage into the project's 00_SOURCE/ — three input kinds:
 #    • Local file   → copy it in (NEVER edit the original):
@@ -446,12 +446,12 @@ bash ${CLAUDE_PLUGIN_ROOT}/vault/scripts/new_project.sh <brand> <slug>
 #         yt-dlp -f 'bv*+ba/b' --merge-output-format mp4 \
 #                -o "<proj>/00_SOURCE/<slug>.mp4" "<youtube-url>"
 #    • Google Drive → use skill: footage-fetch (scaffolds its OWN verified project):
-#         bash ${CLAUDE_PLUGIN_ROOT}/skills/footage-fetch/scripts/gdrive_pull.sh <brand> "<drive-url>" <slug>
+#         python ${CLAUDE_PLUGIN_ROOT}/skills/footage-fetch/scripts/gdrive_pull.py <brand> "<drive-url>" <slug>
 #    A bare `/edit <url>` => do this ingest FIRST, then proceed. Each separate source = its own project.
 
 # 3) Scaffold manifest.json + cuts.json + captions.ass templates
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/scripts/init_manifest.py \
-    ~/Downloads/<brand>/YYYY-MM-DD_<slug> \
+python ${CLAUDE_PLUGIN_ROOT}/skills/render/scripts/init_manifest.py \
+    %USERPROFILE%/Videos/vibe-editing/<brand>/YYYY-MM-DD_<slug> \
     --pipeline {listicle|qa|single}
 ```
 The scaffolder auto-detects the 4K master under `00_SOURCE/`, picks a default reframe preset
@@ -466,7 +466,7 @@ manifest.json) follows Brand nomenclature.
 **→ Use skill: `source-intel`** — analyze the footage BEFORE any editing decisions.
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/source-intel/scripts/analyze.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/source-intel/scripts/analyze.py \
     --source 00_SOURCE/video.mp4 \
     --out 10_WORK/source_intel.json
 ```
@@ -544,7 +544,7 @@ Session-level word-level transcript for mining. **Default = local whisper, no ke
 
 ```bash
 ffmpeg -y -i SOURCE.mp4 -ac 1 -ar 16000 -vn 10_WORK/audio.wav
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/long-form-ingest/scripts/transcribe_local.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/long-form-ingest/scripts/transcribe_local.py \
     10_WORK/audio.wav --out 10_WORK/words.json
 ```
 
@@ -572,7 +572,7 @@ For multicam: transcribe each mic ONCE → `10_WORK/_transcripts/<mic>.words.jso
 
 ### 3a. thread_mine — cross-timeline threads
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/thread_mine.py --transcript 10_WORK/words.json --top 8 --out 10_WORK/threads
+python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/thread_mine.py --transcript 10_WORK/words.json --top 8 --out 10_WORK/threads
 ```
 Finds moments from DIFFERENT parts of the timeline that connect into one clip.
 
@@ -581,7 +581,7 @@ Finds moments from DIFFERENT parts of the timeline that connect into one clip.
 windows by the **empirical lift table** (`config/clip_lift.json`, 602 raw→clip pairs) and proposes
 the open/exit/structure + the exact open/exit lines per candidate, ranked MINE/MAYBE/PASS by lift:
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/clip_select.py --transcript 10_WORK/words.json --top 12 --out 10_WORK/clips
+python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/clip_select.py --transcript 10_WORK/words.json --top 12 --out 10_WORK/clips
 ```
 The verdict is DATA-DRIVEN (lift_score = 0.35·open + 0.40·exit + 0.25·structure); the human picks
 from the ranked MINE list → cuts.json. The picks are PRIORS, not gospel — the step-9 audits are the
@@ -589,7 +589,7 @@ final bar. Rubric: `prompts/clip_select.md`; rules: `references/longform_clip_pa
 
 **Q&A / hotline (DO NOT use for clips):** use `tam_select.py` (its own TAM filter) — untouched:
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/tam_select.py --transcript 10_WORK/words.json --top 12 --out 10_WORK/tam
+python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/tam_select.py --transcript 10_WORK/words.json --top 12 --out 10_WORK/tam
 ```
 The MINE list = your candidate set. For long Q&A sessions: `tam_pipeline.py` (segment → select per exchange).
 
@@ -626,7 +626,7 @@ Choose the EXACT hook + payoff PHRASE for each candidate. Anchor WORD-PRECISE to
 ### Universal rules:
 0. **🛑 VERIFY THE SHOT — run `shot_check.py` on EVERY candidate before you commit it.** Good words
    on a bad shot = a bad clip.
-   `python3 ${CLAUDE_PLUGIN_ROOT}/skills/source-intel/scripts/shot_check.py SOURCE --start <in> --end <out>`
+   `python ${CLAUDE_PLUGIN_ROOT}/skills/source-intel/scripts/shot_check.py SOURCE --start <in> --end <out>`
    Only ship windows that return **GOOD**. If it returns **PROFILE / WIDE / MULTI / NO_FACE**, the
    moment looks bad as a vertical no matter how good the line is — find a different window where the
    SAME point is on a face-on, single-subject shot, or drop it. This is the #1 selection guard — it's
@@ -831,7 +831,7 @@ After choosing which candidate to cut, write its `hook_type` + performance signa
 `manifest.json` so the caption director receives a clip-specific emphasis brief at render time:
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/set_caption_context.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/set_caption_context.py \
     --tam      10_WORK/tam.json \
     --rank     <chosen rank> \
     --manifest manifest.json \
@@ -885,7 +885,7 @@ Two validators run BEFORE any cut/encode work. Each catches a distinct failure c
 
 ### 5a. Window validator — boundaries vs transcript
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/window_validator.py \
+python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/window_validator.py \
     --transcript words.json --spec structure.json --rough --source VIDEO.mp4
 ```
 9 automated rules: LEADING_ORPHAN, TRAILING_ORPHAN, OVERLAP, PAYOFF_TRUNCATED, OPENER_DIRTY, CLIPPED_TAIL, GHOST_SILENCE, TANGENT_RISK, DISJOINT_ORDER. Fix every ERROR before cutting.
@@ -893,7 +893,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/window_validator.py \
 
 ### 5b. Handoff validator — manifest vs sub-skill contracts (2026-06-12)
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/handoff_validator.py <project_dir>
+python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/handoff_validator.py <project_dir>
 ```
 Validates the **full orchestrator→sub-skill payload** before any sub-skill (render, h2v,
 caption-clips, mix) runs. Catches the "orchestrator forgot to set X" / "X has the wrong
@@ -933,7 +933,7 @@ Choose one engine:
 
 **precision_cut.py** (default, fast):
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/precision_cut.py \
+python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/precision_cut.py \
     --source VIDEO.mp4 --transcript words.json --keep-spans '[[start, end]]' --out clip.mp4
 ```
 > 🛑 **Cut WITH this engine — do NOT hand-roll a bare `ffmpeg trim+concat`.** precision_cut.py fades every
@@ -995,7 +995,7 @@ After the content cut, transcribe the cut clip and scan for:
 
 **Multi-cam / near-stationary single-cam:**
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/jumpcut.py clip.mp4 out.mp4 --noise <floor> --max-pause 0.15
+python ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/jumpcut.py clip.mp4 out.mp4 --noise <floor> --max-pause 0.15
 ```
 - Floor = `mean_volume − 7 to −10 dB` (MEASURE with `volumedetect`, don't guess)
 - Run jumpcut on the RAW audio (before loudnorm), not after — loudnorm lifts room tone above threshold
@@ -1006,7 +1006,7 @@ pause you shouldn't have — merge those two segments back to continuous, don't 
 
 ### 6e. Content-level trim (tangents, repeats — optional but recommended)
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/llm_edit.py <transcript.json> --start S --end E --min-keep-ratio 0.60 --out trims.json
+python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/llm_edit.py <transcript.json> --start S --end E --min-keep-ratio 0.60 --out trims.json
 ```
 
 Full cutting rules → `${CLAUDE_PLUGIN_ROOT}/vault/CLIP_CUTTING_PLAYBOOK.md`
@@ -1022,7 +1022,7 @@ Full cutting rules → `${CLAUDE_PLUGIN_ROOT}/vault/CLIP_CUTTING_PLAYBOOK.md`
 ### 🔒 FOR Q&A CLIPS: run `qa_prebuild_audit.py` BEFORE step 8 (2026-06-16)
 For any clip going through `qa_assembly.py` (split-screen + cam-switch Q&A grammar), the 7-gate `qa_prebuild_audit` is **mandatory** between EDL design and 4K encode. It catches the defect classes Operator reviewed Guest for (zero-gap word-clip, cam-transition cuts mid-completion, ends-before-payoff, no problem in intro, slow music intro, guest panel too low). Saves a 7-min wasted encode per flagged defect.
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/qa_prebuild_audit.py <clip_dir> \
+python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/qa_prebuild_audit.py <clip_dir> \
     --transcript <words.json> --sync <qa_sync.json> --music <track.mp3>
 ```
 Exit 0 → encode. Exit 1 → fix flagged items (audit prints `suggested_fix` per flag) and re-audit. **See `references/qa_playbook.md` STEP 8a for what each gate checks.**
@@ -1131,10 +1131,10 @@ have positive proof it's a false alarm. Specifically:
 
 ```bash
 # First render
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir>
+python ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir>
 
 # Revision (after editing cuts.json / captions.ass / a value in manifest.json)
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir> --bump
+python ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project_dir> --bump
 ```
 
 The engine reads `manifest.json`, runs the pipeline's stages in order (`cut → reframe →
@@ -1158,7 +1158,7 @@ then reframe. See `horizontal-to-vertical/SKILL.md` for the full rule (locked 20
 
 **🔒 Captions = always `caption-clips`, never hand-roll.** One engine:
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_caption.py <input.mp4> <output.mp4> [--context "guest asks, Speaker answers"]
+python ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_caption.py <input.mp4> <output.mp4> [--context "guest asks, Speaker answers"]
 ```
 One preset (`presets/spice.json`, resolution-adaptive). Don't hand-roll a burn or use any old
 preset — the `caption_qc` guard will reject it. See `caption-clips/SKILL.md`.
@@ -1254,7 +1254,7 @@ Hook/one-arc/payoff/clarity/pace 5-dim read + brand-risk R1–R4.
 **Gate 3 — audit-visual** (visual-only, audio stripped)
 **→ Use skill: `audit-visual`**
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/audit-visual/scripts/check.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/audit-visual/scripts/check.py \
     --clip 20_DELIVER/v<N>/clip.mp4 --out 10_WORK/audit_visual.json
 ```
 Face tracking stability, framing consistency, frozen frames, black frames, first/last frame, aspect ratio.
@@ -1262,7 +1262,7 @@ Face tracking stability, framing consistency, frozen frames, black frames, first
 **Gate 4 — audit-audio** (audio-only, video stripped)
 **→ Use skill: `audit-audio`**
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/audit-audio/scripts/check.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/audit-audio/scripts/check.py \
     --clip 20_DELIVER/v<N>/clip.mp4 --out 10_WORK/audit_audio.json
 ```
 Word clipping, pops/clicks at splices, level consistency, buzz/hum, clean open/close.
@@ -1270,7 +1270,7 @@ Word clipping, pops/clicks at splices, level consistency, buzz/hum, clean open/c
 **Gate 5 — audit-captions** (burnt-in captions check)
 **→ Use skill: `audit-captions`**
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/audit-captions/scripts/check.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/audit-captions/scripts/check.py \
     --clip 20_DELIVER/v<N>/clip.mp4 --ass 10_WORK/captions.ass --out 10_WORK/audit_captions.json
 ```
 Accuracy vs independent transcription, speaker color attribution, timing sync, formatting, gaps.
@@ -1278,7 +1278,7 @@ Accuracy vs independent transcription, speaker color attribution, timing sync, f
 **Gate 6 — audit-script** (transcript editorial check)
 **→ Use skill: `audit-script`**
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/audit-script/scripts/check.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/audit-script/scripts/check.py \
     --clip 20_DELIVER/v<N>/clip.mp4 --out 10_WORK/audit_script.json
 ```
 Cold viewer test, context→payoff, one-arc rule, hook quality, payoff resolution, logical flow, brand safety, length.

@@ -18,10 +18,18 @@ verdict (judged): MINE >= 70 · MAYBE >= 50 · PASS < 50.  Disable the judge wit
 
 Input  : transcript JSON ({"segments":[{start,end,text}]}) or plain .txt
 Output : <out>.clips.json (ranked, scored) + <out>.clips.md (readable)
-Auth   : ANTHROPIC_API_KEY (env / ~/.zshrc) else the `claude -p` CLI.
+Auth   : ANTHROPIC_API_KEY (env / config/keys.env) else the `claude -p` CLI.
 Usage  : python3 clip_select.py --transcript pod.json --top 12 --out 10_WORK/pod
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os4, sys as _sys4
+_d4 = _os4.path.dirname(_os4.path.abspath(__file__))
+while _d4 != _os4.path.dirname(_d4) and not _os4.path.isdir(_os4.path.join(_d4, '.claude-plugin')):
+    _d4 = _os4.path.dirname(_d4)
+_sys4.path.insert(0, _os4.path.join(_d4, 'lib', '_shared'))
+from winenv import read_key  # noqa: E402
+# ── end winenv bootstrap ──
 # ── engine bundled-keys autoload (config/keys.env) ──
 import os as _ko, pathlib as _kp
 def _acq_load_keys():
@@ -74,13 +82,7 @@ def get_key():
     k = os.environ.get("ANTHROPIC_API_KEY")
     if k:
         return k
-    try:
-        m = re.search(r"sk-ant-[A-Za-z0-9_\-]+", (Path.home() / ".zshrc").read_text())
-        if m:
-            return m.group(0)
-    except Exception:
-        pass
-    return None
+    return read_key("ANTHROPIC_API_KEY") or None
 
 
 def call_claude(system: str, user: str) -> str:

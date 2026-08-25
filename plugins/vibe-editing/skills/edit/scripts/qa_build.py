@@ -46,6 +46,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import PY, ffmpeg_bin  # noqa: E402
 import os, sys, json, glob, shutil, subprocess, argparse, time
 
 SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))          # .../edit
@@ -74,8 +75,7 @@ SPEAKER_ZOOM, SPEAKER_EYE = "1.55", "0.32"                              # qa_ref
 
 
 def find_bin(name):
-    c = sorted(glob.glob(f"/opt/homebrew/Cellar/ffmpeg-full/*/bin/{name}"), reverse=True)
-    return c[0] if c else (shutil.which(name) or name)
+    return ffmpeg_bin(name)
 FF, FFP = find_bin("ffmpeg"), find_bin("ffprobe")
 
 
@@ -178,7 +178,7 @@ def main():
             tmp = f"{work}/speaker_{j}_4k.mp4"
             run([FF, "-y", "-loglevel", "error", "-ss", f"{r0-af_off:.3f}", "-i", af_cam, "-t", f"{r1-r0:.3f}", "-an",
                  *encoder_args(3840, 2160, FF, tier="intermediate"), "-r", FPS, tmp])
-            r = subprocess.run(["python3", REFRAME, tmp, mp, "--res", "1080", "--zoom", SPEAKER_ZOOM, "--eye-y", SPEAKER_EYE], capture_output=True, text=True)
+            r = subprocess.run([PY, REFRAME, tmp, mp, "--res", "1080", "--zoom", SPEAKER_ZOOM, "--eye-y", SPEAKER_EYE], capture_output=True, text=True)
             print("    " + (r.stdout.strip().splitlines()[-2] if r.stdout.strip() else r.stderr.strip()[-160:]), flush=True)
             if r.returncode: raise SystemExit(1)
             if not a.keep_temp: os.remove(tmp)
@@ -232,9 +232,9 @@ def main():
 
     # ---------- CAPTIONS: transcribe -> lowercase -> money -> EDL-driven director -> spice -> HW burn ----------
     print("  [captions] transcribe + spice ...", flush=True)
-    run(["python3", TRANSCRIBE, base, "--start", "0", "--end", f"{dur_of(base):.2f}", "--out", f"{work}/w_raw.json"])
-    run(["python3", NORMALIZE, f"{work}/w_raw.json", f"{work}/w_norm.json"])     # lowercase (guide rule)
-    run(["python3", SPICE_NORM, f"{work}/w_norm.json", f"{work}/w_spice.json"])  # $ / % / unit tokens
+    run([PY, TRANSCRIBE, base, "--start", "0", "--end", f"{dur_of(base):.2f}", "--out", f"{work}/w_raw.json"])
+    run([PY, NORMALIZE, f"{work}/w_raw.json", f"{work}/w_norm.json"])     # lowercase (guide rule)
+    run([PY, SPICE_NORM, f"{work}/w_norm.json", f"{work}/w_spice.json"])  # $ / % / unit tokens
     words = json.load(open(f"{work}/w_spice.json"))["words"]
     # clip-time -> speaker, from the ACTUAL (snapped) segment durations
     cr, t = [], 0.0
@@ -251,7 +251,7 @@ def main():
     edl_guest, _ = resolve_speakers(words, segdur, segs, speaker_at, spk_mic, cam_dir, FF,
                                     debug=bool(os.environ.get("VIBE_DIAR_DEBUG")))
     director = {}
-    _dr = subprocess.run(["python3", f"{CAPS}/scripts/caption_director.py", f"{work}/w_spice.json",
+    _dr = subprocess.run([PY, f"{CAPS}/scripts/caption_director.py", f"{work}/w_spice.json",
                           "--out", f"{work}/director_llm.json", "--context", "q&a workshop"],
                          capture_output=True, text=True)
     if _dr.returncode == 0 and os.path.exists(f"{work}/director_llm.json"):
@@ -268,11 +268,11 @@ def main():
     # the strong even dark halo), NOT the weak inline ASS shadow (\bord\blur in cc.ass) a subtitles=
     # burn would use. caption-clips is the SSOT for the shadow; always route delivery through --burn.
     cc_burned = f"{work}/cc_burned.mp4"
-    run(["python3", GEN_SPICE, f"{work}/w_spice.json", "--preset", a.preset, "--style", f"{work}/director.json",
+    run([PY, GEN_SPICE, f"{work}/w_spice.json", "--preset", a.preset, "--style", f"{work}/director.json",
          "--out", f"{work}/cc.ass", "--burn", base, "--burn-out", cc_burned])
     _lint = f"{CAPS}/scripts/caption_lint.py"
     if os.path.exists(_lint):
-        subprocess.run(["python3", _lint, f"{work}/cc.ass"])
+        subprocess.run([PY, _lint, f"{work}/cc.ass"])
     if not os.path.exists(cc_burned):
         sys.exit(f"caption burn failed — {cc_burned} missing")
     # Finishing pass on the gblur-shadowed burn (sync-safe — captions baked in): ~3-frame video lead

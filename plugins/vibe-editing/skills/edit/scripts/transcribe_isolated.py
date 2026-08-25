@@ -25,6 +25,14 @@ Usage:
   python3 transcribe_isolated.py call.mp4 --force-mono   # skip isolation, mono mix only
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os7, sys as _sys7
+_d7 = _os7.path.dirname(_os7.path.abspath(__file__))
+while _d7 != _os7.path.dirname(_d7) and not _os7.path.isdir(_os7.path.join(_d7, '.claude-plugin')):
+    _d7 = _os7.path.dirname(_d7)
+_sys7.path.insert(0, _os7.path.join(_d7, 'lib', '_shared'))
+from winenv import ffmpeg_bin  # noqa: E402
+# ── end winenv bootstrap ──
 # ── engine bundled-keys autoload (config/keys.env) ──
 import os as _ko, pathlib as _kp
 def _acq_load_keys():
@@ -57,7 +65,7 @@ GROQ_MAX_BYTES = 40 * 1024 * 1024
 def find_bin(name: str) -> str:
     if os.environ.get(name.upper()):
         return os.environ[name.upper()]
-    cands = [shutil.which(name)] + sorted(glob.glob(f"/opt/homebrew/Cellar/ffmpeg-full/*/bin/{name}"))
+    cands = [ffmpeg_bin(name)]
     for c in cands:
         if c and Path(c).exists():
             return c

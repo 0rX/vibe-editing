@@ -66,14 +66,9 @@ SEAM_SHADOW = HERE.parent / "assets" / "seam_shadow.png"
 
 def find_ffmpeg() -> str:
     """Locate ffmpeg-full (for libass) or fall back to system ffmpeg."""
-    for pattern in ("/opt/homebrew/Cellar/ffmpeg-full/*/bin/ffmpeg",
-                    "/usr/local/Cellar/ffmpeg-full/*/bin/ffmpeg"):
-        hits = sorted(glob.glob(pattern))
-        if hits:
-            return hits[-1]
     found = shutil.which("ffmpeg")
     if not found:
-        print("ffmpeg not found. Install with: brew install ffmpeg-full", file=sys.stderr)
+        print("ffmpeg not found. Install with: winget install --id Gyan.FFmpeg-full", file=sys.stderr)
         sys.exit(2)
     return found
 

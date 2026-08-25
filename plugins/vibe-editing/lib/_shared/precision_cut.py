@@ -46,6 +46,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import PY  # noqa: E402  (path set by bootstrap above)
 import argparse, json, os, re, subprocess
 
 JUMPCUT = _acq("caption-clips/scripts/jumpcut.py")
@@ -130,7 +131,7 @@ def main():
     cut, tight = base + "_cut.mp4", base + "_tight.mp4"
     run(["ffmpeg","-y","-loglevel","error","-i",raw,"-filter_complex",filt,"-map","[outv]","-map","[outa]",
          "-r","30",*_venc(raw,18),"-c:a","aac","-b:a","160k",cut],"cut")
-    run(["python3",JUMPCUT,cut,tight,"--noise",a.floor,"--max-pause",a.max_pause,"--min-detect","0.18","--crf","18"],"jumpcut")
+    run([PY,JUMPCUT,cut,tight,"--noise",a.floor,"--max-pause",a.max_pause,"--min-detect","0.18","--crf","18"],"jumpcut")
     run(["ffmpeg","-y","-loglevel","error","-i",tight,"-af","highpass=f=80,volume=1.2,loudnorm=I=-16:LRA=11:TP=-6",
          "-c:v","copy","-c:a","aac","-b:a","160k",a.out],"audio")
     for f in (cut, tight):

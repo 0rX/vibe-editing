@@ -16,7 +16,7 @@ description: One-shot pipeline that turns a long-form video (YouTube link or loc
 ## The run (agent steps)
 ### 1. Ingest
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/listicle-short/scripts/ingest.py "<youtube-url-or-file>" --out ~/Downloads/<slug>/
+python ${CLAUDE_PLUGIN_ROOT}/skills/listicle-short/scripts/ingest.py "<youtube-url-or-file>" --out %USERPROFILE%/Videos/vibe-editing/<slug>/
 ```
 → `source.mp4` (1080p), `transcript_ts.txt` (read this), `transcript_words.json` (precise word timestamps), `meta.json`. YouTube uses free json3 captions; local files fall back to Groq lv3.
 
@@ -43,8 +43,8 @@ If `--stop-after-script`, stop here. (If a numbered segment is missing `cat`, th
 
 ### 3. Build the V1 (one command — does everything else)
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/listicle-short/scripts/build_short.py \
-    --source ~/Downloads/<slug>/source.mp4 --spec spec.json --out ~/Downloads/<slug>/
+python ${CLAUDE_PLUGIN_ROOT}/skills/listicle-short/scripts/build_short.py \
+    --source %USERPROFILE%/Videos/vibe-editing/<slug>/source.mp4 --spec spec.json --out %USERPROFILE%/Videos/vibe-editing/<slug>/
     [--no-reframe] [--stop-after-assemble] [--music <track.mp3>] [--director stream.json]
 ```
 It runs: cut every soundbite (frame-accurate) → concat → **face-tracked 9:16** → transcribe → normalize → **spice_normalize** (money/symbol SOP) → **caption director** → `generate_spice` (captions auto-lowered to 66% to clear the pill) → **`spice_tabs --style glass`** (the locked "N. CATEGORY" pill) → **level audio** → `<title>_v1.mp4`.
@@ -95,7 +95,7 @@ raw multi-take sessions. Four non-negotiables, learned the hard way (twice now):
    the line you remember may never have been delivered cleanly. Use the clean intro framing that WAS said
    (e.g. *"I wanted to make a video about five business lessons I just learned crossing 250M in 2024"*).
 
-6. **When you add a CLI flag, WIRE IT THROUGH to the actual call — not just the arg parser.** `reframe.sh` parsed
+6. **When you add a CLI flag, WIRE IT THROUGH to the actual call — not just the arg parser.** `reframe.py` parsed
    `--nose-y` into `$NOSEY` but the `reframe_h2v.py` line still hard-coded `--nose-y-1080 719`, so the "bump him up"
    note silently did NOTHING for a whole render + a re-render. **Always A/B two frames (old vs new value) to PROVE a
    framing/visual flag actually changed the output** before batching. `--nose-y 580` ≈ "bump up / less headroom" vs the
@@ -176,7 +176,7 @@ apmontserratte-float cutting FAILS — Money Rules took **80 revision rounds** b
 - Cut with the **`_shared/precision_cut.py` engine + `${CLAUDE_PLUGIN_ROOT}/vault/CLIP_CUTTING_PLAYBOOK.md`** — word-index
   keep-spans, each ENDING at the word's TRUE acoustic end (`silencedetect`, NOT Whisper's ~0.1-0.25s-early label).
   `build_short` still hand-rolls float in/out → **upgrade pending**; until then apply the playbook by hand.
-- **PER-SEGMENT reframe** (`reframe.sh` per seg → concat) — a single-median track makes the head JUMP at every cut.
+- **PER-SEGMENT reframe** (`reframe.py` per seg → concat) — a single-median track makes the head JUMP at every cut.
 - **ASR LIES**: word.start runs late (catches the previous word — "passive" labeled 0.4s early let "number one"
   bleed in at −14 dB), word.end runs early (clips the tail — "twice/money/once/reality" came out short), and it
   hallucinates leading "So/And/Two/Because" at seams. VERIFY a seam by **level-check** (`volumedetect` the onset:
@@ -186,7 +186,7 @@ apmontserratte-float cutting FAILS — Money Rules took **80 revision rounds** b
 - **Endings RING OUT** — extend past the true end, de-click only (0.02-0.04s), never a tail-fade over the last word.
 
 **Graded brands (Speaker) = GRADE BEFORE CAPTIONS:**
-1. Deliver the **uncaptioned 4K cut** (`reframe.sh --res 4k`) for the colorist — NO captions/tabs (the grade cooks them).
+1. Deliver the **uncaptioned 4K cut** (`reframe.py --res 4k`) for the colorist — NO captions/tabs (the grade cooks them).
 2. Colorist returns graded clip → re-transcribe IT (clean cut → clean transcript) → rebuild captions + glass tabs at
    4K (spice.json 4k preset + `y_percent 66`; `spice_tabs` auto-scales 2× from PlayResX; `--y round(H*0.594)`),
    synced to the graded timeline. Usually only "no BS" needs the mishear fix.
@@ -224,7 +224,7 @@ per clip to match the ManyChat trigger.
 
 **Build it:**
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/listicle-short/scripts/cta_overlay.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/listicle-short/scripts/cta_overlay.py \
     --graded   10_WORK/<TitleHook>_graded_4K.mov \
     --ass      10_WORK/grad_tabs.ass \
     --keyword  rules \

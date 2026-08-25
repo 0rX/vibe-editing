@@ -52,11 +52,11 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import ffmpeg_bin  # noqa: E402
 import cv2, numpy as np, subprocess, sys, os, argparse, glob
 
 def find_bin(name):
-    c = sorted(glob.glob(f"/opt/homebrew/Cellar/ffmpeg-full/*/bin/{name}"), reverse=True)
-    return c[0] if c else name
+    return ffmpeg_bin(name)
 FF = find_bin("ffmpeg")
 sys.path.insert(0, VIBE_SHARED)
 try:

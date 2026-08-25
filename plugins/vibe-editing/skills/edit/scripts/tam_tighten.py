@@ -30,6 +30,14 @@ Usage:
   python3 tam_tighten.py --transcript exchange_words.json --format hotline --out tighten/A.cuts.json
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os4, sys as _sys4
+_d4 = _os4.path.dirname(_os4.path.abspath(__file__))
+while _d4 != _os4.path.dirname(_d4) and not _os4.path.isdir(_os4.path.join(_d4, '.claude-plugin')):
+    _d4 = _os4.path.dirname(_d4)
+_sys4.path.insert(0, _os4.path.join(_d4, 'lib', '_shared'))
+from winenv import read_key  # noqa: E402
+# ── end winenv bootstrap ──
 # ── engine bundled-keys autoload (config/keys.env) ──
 import os as _ko, pathlib as _kp
 def _acq_load_keys():
@@ -86,19 +94,13 @@ def norm(w: str) -> str:
     return PUNCT_RE.sub("", str(w).strip().lower())
 
 
-# ---- Claude call (key from env/~/.zshrc; SDK with tool, else claude CLI) ----------------------
+# ---- Claude call (key from env/config/keys.env; SDK with tool, else claude CLI) ----------------------
 
 def get_key() -> str | None:
     k = os.environ.get("ANTHROPIC_API_KEY")
     if k:
         return k
-    try:
-        m = re.search(r"sk-ant-[A-Za-z0-9_\-]+", (Path.home() / ".zshrc").read_text())
-        if m:
-            return m.group(0)
-    except Exception:
-        pass
-    return None
+    return read_key("ANTHROPIC_API_KEY") or None
 
 
 def call_decisions(system: str, user: str, n_indices: int) -> dict[int, dict]:

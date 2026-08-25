@@ -23,6 +23,14 @@ Usage:
 Overrides: pass --top-preset / --bottom-preset to use a different preset per side
 (e.g. --top-preset stage when the top cam is the stage cam in a hybrid setup).
 """
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isdir(_os.path.join(_d, '.claude-plugin')):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _os.path.join(_d, 'lib', '_shared'))
+from winenv import PY  # noqa: E402
+# ── end winenv bootstrap ──
 import argparse, os, subprocess, sys, tempfile, shutil, json
 from pathlib import Path
 
@@ -69,14 +77,14 @@ def main():
         bot_9x16 = work / "bottom_9x16.mp4"
 
         # Reframe each angle. Override eye_y on the preset to bake the symmetric upper-third placement.
-        run(["python3", REFRAME, args.top,    top_9x16,
+        run([PY, REFRAME, args.top,    top_9x16,
              "--preset", args.top_preset, "--eye-y", f"{args.top_eye_y}", "--res", "1080"])
-        run(["python3", REFRAME, args.bottom, bot_9x16,
+        run([PY, REFRAME, args.bottom, bot_9x16,
              "--preset", args.bot_preset, "--eye-y", f"{args.bot_eye_y}", "--res", "1080"])
 
         # Stack. TOP gets cropped y=0..960 (its high face lands in upper-third of tile),
         # BOTTOM gets cropped y=960..1920 (its low face lands in upper-third of tile).
-        run(["python3", STACK,
+        run([PY, STACK,
              "--speaker",  top_9x16, "--guest", bot_9x16,
              "--out",   args.out,
              "--start", f"{args.start}", "--end", f"{args.end}",

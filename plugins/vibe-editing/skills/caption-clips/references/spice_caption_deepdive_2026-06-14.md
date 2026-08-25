@@ -1,7 +1,7 @@
 # The reference editor caption deep-dive — measured refresh (40 Q&A clips, 2026-06-14)
 
 > Builds on the 2026-06-03 19-clip study (`spice_caption_spec.md`). Source: 40 finished Q&A shorts,
-> high-res frames + word-accurate transcripts. Raw: `~/Downloads/speaker/2026-06-14_QAPatternAnalysis/10_WORK/caption_deepdive.json`.
+> high-res frames + word-accurate transcripts. Raw: `%USERPROFILE%/Videos/vibe-editing/speaker/2026-06-14_QAPatternAnalysis/10_WORK/caption_deepdive.json`.
 
 ## Confirmed / refined — ALREADY in the engine
 - **Color = voice:** white = Speaker, yellow = guest/quoted — **40/40 use yellow** (~10% run all-white = simpler/older edits; DEFAULT to the white/yellow split).

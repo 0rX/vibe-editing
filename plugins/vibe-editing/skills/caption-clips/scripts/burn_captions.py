@@ -34,6 +34,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import ffmpeg_bin  # noqa: E402
 import argparse
 import os
 import shutil
@@ -65,10 +66,7 @@ def find_ffmpeg_with_libass() -> str:
         candidates.append(shutil.which("ffmpeg"))
     if shutil.which("ffmpeg-full"):
         candidates.append(shutil.which("ffmpeg-full"))
-    # macOS Homebrew ffmpeg-full Cellar locations.
-    import glob
-    candidates.extend(sorted(glob.glob("/opt/homebrew/Cellar/ffmpeg-full/*/bin/ffmpeg")))
-    candidates.extend(sorted(glob.glob("/usr/local/Cellar/ffmpeg-full/*/bin/ffmpeg")))
+    candidates.append(ffmpeg_bin("ffmpeg"))
 
     seen = set()
     for c in candidates:
@@ -85,7 +83,7 @@ def find_ffmpeg_with_libass() -> str:
 
     sys.stderr.write(
         "ERROR: no ffmpeg build with the `subtitles` filter (libass) was found.\n"
-        "On macOS: `brew install ffmpeg-full` (or build ffmpeg with --enable-libass).\n"
+        "On macOS: `winget install --id Gyan.FFmpeg-full` (or build ffmpeg with --enable-libass).\n"
         "You can also set FFMPEG=/path/to/ffmpeg to override.\n"
     )
     sys.exit(3)

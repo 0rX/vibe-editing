@@ -20,6 +20,14 @@ Usage:
       --video src.mp4 --out final.mp4 [--start 0 --end DUR] [--patch-only]
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isdir(_os.path.join(_d, '.claude-plugin')):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _os.path.join(_d, 'lib', '_shared'))
+from winenv import PY  # noqa: E402
+# ── end winenv bootstrap ──
 import argparse, re, subprocess, sys
 from pathlib import Path
 
@@ -152,7 +160,7 @@ def main() -> int:
                               "-of", "default=nokey=1:noprint_wrappers=1", str(a.video)],
                              capture_output=True, text=True).stdout.strip()
         end = float(dur) if dur else 0.0
-    cmd = ["python3", str(SC / "burn_captions.py"), str(a.video), str(patched),
+    cmd = [PY, str(SC / "burn_captions.py"), str(a.video), str(patched),
            "--start", str(a.start), "--end", str(end), "--out", str(a.out)]
     print(f"burning: {' '.join(cmd)}")
     r = subprocess.run(cmd)

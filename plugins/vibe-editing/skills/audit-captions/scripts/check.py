@@ -45,6 +45,14 @@ every clip the spice pipeline produces). Design:
     (host white / guest yellow); the expected map is read from the clip's
     contract/manifest when present.
 """
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os4, sys as _sys4
+_d4 = _os4.path.dirname(_os4.path.abspath(__file__))
+while _d4 != _os4.path.dirname(_d4) and not _os4.path.isdir(_os4.path.join(_d4, '.claude-plugin')):
+    _d4 = _os4.path.dirname(_d4)
+_sys4.path.insert(0, _os4.path.join(_d4, 'lib', '_shared'))
+from winenv import read_key  # noqa: E402
+# ── end winenv bootstrap ──
 
 # ── engine bundled-keys autoload (config/keys.env) ──
 import os as _ko, pathlib as _kp
@@ -113,13 +121,7 @@ def groq_key():
     k = os.environ.get("GROQ_API_KEY")
     if k:
         return k
-    for rc in (".zshrc", ".bashrc", ".profile"):
-        p = Path.home() / rc
-        if p.exists():
-            m = re.search(r'GROQ_API_KEY=["\']?([A-Za-z0-9_\-]+)', p.read_text())
-            if m:
-                return m.group(1)
-    return None
+    return read_key("GROQ_API_KEY") or None
 
 
 def transcribe_clip(clip_path: str) -> dict:

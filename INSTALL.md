@@ -25,17 +25,17 @@ it carries its own `.claude-plugin/plugin.json` and self-loads. Run `/reload-plu
 ## 2. System tools
 
 - **FFmpeg with libass** — REQUIRED. Every render shells out to `ffmpeg`/`ffprobe`; libass burns
-  the captions. `brew install ffmpeg`
-- **tesseract** — caption OCR used by the audit gates. `brew install tesseract`
-- **yt-dlp** — URL ingest (installed by `requirements.txt`, or `brew install yt-dlp`).
-- **rclone** — cloud-drive ingest (`footage-fetch`). `brew install rclone && rclone config`.
+  the captions. `winget install --id ffmpeg`
+- **tesseract** — caption OCR used by the audit gates. `winget install --id tesseract`
+- **yt-dlp** — URL ingest (installed by `requirements.txt`, or `winget install --id yt-dlp`).
+- **rclone** — cloud-drive ingest (`footage-fetch`). `winget install --id rclone && rclone config`.
 - Optional: **Node + npm** (only the `promo` end-card), **Montreal Forced Aligner** (`script-cut`).
 
 ## 3. Python dependencies (3.10+)
 
 ```bash
 cd plugins/vibe-editing
-python3 -m venv .venv && source .venv/bin/activate
+python -m venv .venv && .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -80,8 +80,8 @@ render → re-QC → audit → deliver). Or drive the render engine directly onc
 `manifest.json` exist:
 
 ```bash
-python3 "$CLAUDE_PLUGIN_ROOT/skills/render/engine.py" <project_dir>          # build
-python3 "$CLAUDE_PLUGIN_ROOT/skills/render/engine.py" <project_dir> --bump   # revise (changed stages only)
+python "$CLAUDE_PLUGIN_ROOT/skills/render/engine.py" <project_dir>          # build
+python "$CLAUDE_PLUGIN_ROOT/skills/render/engine.py" <project_dir> --bump   # revise (changed stages only)
 ```
 
 ## 8. First run

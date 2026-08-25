@@ -15,6 +15,14 @@ Usage:
   caption_sync_gate.py --cc cc_text.ass --clip CLIP.mp4 [--audio-words fresh_lv3.json] [--max-mismatch 1]
 Exit 0 = in sync (<= max-mismatch real diffs) · 1 = caption/audio mismatch.
 """
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os6, sys as _sys6
+_d6 = _os6.path.dirname(_os6.path.abspath(__file__))
+while _d6 != _os6.path.dirname(_d6) and not _os6.path.isdir(_os6.path.join(_d6, '.claude-plugin')):
+    _d6 = _os6.path.dirname(_d6)
+_sys6.path.insert(0, _os6.path.join(_d6, 'lib', '_shared'))
+from winenv import whisper_cli, whisper_model  # noqa: E402
+# ── end winenv bootstrap ──
 import argparse, re, json, subprocess, difflib, sys, os, tempfile
 from pathlib import Path
 
@@ -56,8 +64,14 @@ def transcribe(clip):
     wav = tempfile.mktemp(suffix=".wav")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", clip, "-ac", "1", "-ar", "16000", wav], capture_output=True)
     base = tempfile.mktemp()
-    model = os.path.expanduser("~/.claude-video-vision/models/ggml-large-v3.bin")
-    subprocess.run(["whisper-cli", "-m", model, "-f", wav, "-oj", "-of", base, "-ml", "1"], capture_output=True)
+    model = whisper_model()
+    exe = whisper_cli()
+    if not exe or not model.exists():
+        # Optional backend. Returning empty lets the gate SKIP rather than fail a clip
+        # over a tool the user was never required to install.
+        print("[caption_sync_gate] whisper.cpp not available - skipping", file=sys.stderr)
+        return []
+    subprocess.run([exe, "-m", str(model), "-f", wav, "-oj", "-of", base, "-ml", "1"], capture_output=True)
     j = base + ".json"
     if not os.path.exists(j): return []
     return [s.get("text", "") for s in json.loads(open(j).read()).get("transcription", [])]

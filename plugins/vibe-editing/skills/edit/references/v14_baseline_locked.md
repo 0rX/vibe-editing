@@ -1,6 +1,6 @@
 # Q&A V1 BASELINE — v14 LOCKED 2026-06-04 (user: "lock this in as the v1 baseline")
 
-Master = `~/Downloads/ExampleQA_QA_v14_4K.mp4`. Reproduce via `/tmp/render_v14.sh`.
+Master = `%USERPROFILE%/Videos/vibe-editing/ExampleQA_QA_v14_4K.mp4`. Reproduce via `/tmp/render_v14.sh`.
 
 ## LOCKED PARAMS (new defaults)
 - **Captions:** caption-DIRECTOR authored (`qa_captions.py --style <director.json>`; run `caption_director.py` first) — yellow-italic guest voice, weight emphasis, single-word size payoffs. **VIBRANT shadow** (spice.json: alpha 0 / offset_y 16 / blur 18 / **stroke_px 14** / both 000000). Two heights by CAMERA via `qa_caption_layout.py`: speaker 0.47, guest 0.674; cues clipped at switches.

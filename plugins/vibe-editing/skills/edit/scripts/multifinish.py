@@ -53,6 +53,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import PY, whisper_cli, whisper_model  # noqa: E402
 import argparse, json, re, subprocess, sys
 from pathlib import Path
 
@@ -65,8 +66,10 @@ GEN_SPICE = CAP / "scripts/generate_spice.py"
 JUMPCUT = CAP / "scripts/jumpcut.py"
 DIRECTOR = HERE / "director_x.py"
 PRESET = SKILL / "presets/spice.json"  # ONE preset; generate_spice --burn is resolution-adaptive (1080/4K)
-MODEL = Path.home() / ".claude-video-vision/models/ggml-large-v3.bin"
-WCLI = "/opt/homebrew/bin/whisper-cli"
+MODEL = whisper_model()
+# Resolved at call time: whisper.cpp is optional, so a missing exe must produce a
+# clear message at the point of use rather than an import-time crash.
+WCLI = whisper_cli() or "whisper-cli"
 
 
 def run(c, **k):
@@ -112,7 +115,7 @@ def main():
     src = clip
     if not a.no_tight:
         tight = capwork / f"{cid}_tight.mp4"
-        r = run(["python3", JUMPCUT, clip, tight,
+        r = run([PY, JUMPCUT, clip, tight,
                  "--max-pause", "0.12", "--noise", "-30dB",
                  "--min-detect", "0.15", "--crf", "18"])
         ks = [(float(m[0]), float(m[1])) for m in re.findall(r'keep\s+([\d.]+)[^\d]+([\d.]+)', r.stdout)]
@@ -171,8 +174,8 @@ def main():
 
     # 2. normalize + proper-noun pass (from config.vocab)
     norm = capwork / f"{cid}_norm.json"
-    run(["python3", NORMALIZE, raw, norm])
-    run(["python3", SPICE_NORM, norm, norm])
+    run([PY, NORMALIZE, raw, norm])
+    run([PY, SPICE_NORM, norm, norm])
     dd = json.loads(norm.read_text())
     capn = {n.lower(): n for n in vocab}
     for w in dd["words"]:
@@ -195,7 +198,7 @@ def main():
 
     # 3. director_x (weight/size/italic), strip its per-word color — SPEAKER governs color
     style = capwork / f"{cid}_style.json"
-    run(["python3", DIRECTOR, norm, "--out", style, "--context", context])
+    run([PY, DIRECTOR, norm, "--out", style, "--context", context])
     st = json.loads(style.read_text()) if style.exists() else {"words": {}}
     for v in st.get("words", {}).values():
         v.pop("c", None)
@@ -217,7 +220,7 @@ def main():
     # 5. spice + burn onto the FINAL clip
     ass = capwork / f"{cid}.ass"
     capped = capwork / f"{cid}_cap.mp4"
-    run(["python3", GEN_SPICE, norm,
+    run([PY, GEN_SPICE, norm,
          "--preset", PRESET, "--out", ass, "--style", style,
          "--burn", src, "--burn-out", capped])
     if not capped.exists():

@@ -11,8 +11,8 @@ A Claude Code skill that takes a single video containing multiple pre-edited sho
    ```bash
    pip install faster-whisper
    ```
-3. Install an FFmpeg that ships with **libass** (the `subtitles` filter). The default Homebrew `ffmpeg` formula drops libass in recent versions — you want `ffmpeg-full`:
-   - macOS: `brew install ffmpeg-full` (the regular `ffmpeg` formula often lacks libass)
+3. Install an FFmpeg that ships with **libass** (the `subtitles` filter). The default winget `ffmpeg` formula drops libass in recent versions — you want `ffmpeg-full`:
+   - macOS: `winget install --id ffmpeg-full` (the regular `ffmpeg` formula often lacks libass)
    - Ubuntu: `sudo apt install ffmpeg` (stock build usually includes libass)
    - Windows: [gyan.dev full build](https://www.gyan.dev/ffmpeg/builds/)
 
@@ -24,7 +24,7 @@ A Claude Code skill that takes a single video containing multiple pre-edited sho
 In Claude Code, just ask:
 
 > "Caption this reel in UGC style: `/path/to/reel.mp4`"
-> "Caption these clips in Pro style: `~/Downloads/clips.mov`"
+> "Caption these clips in Pro style: `%USERPROFILE%/Videos/vibe-editing/clips.mov`"
 
 Claude will detect the skill, split the source at black+silence gaps, transcribe each clip, and output captioned `.mp4` files named from each clip's transcript.
 

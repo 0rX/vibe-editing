@@ -3,7 +3,7 @@
 """Robust 16:9 -> 9:16 reframe using the YuNet DNN face detector (far more reliable than Haar on
 bearded/cap/busy-background sets). Per-frame nose landmark -> median-filter -> moving-average smooth
 -> crop pinned so the NOSE sits at frame center, Y full-height (zoom 1.0), Lanczos resize to 2160x3840.
-Usage: reframe_yunet.py INPUT OUTPUT [--zoom 1.0] [--smooth 41] [--model /tmp/yunet.onnx]"""
+Usage: reframe_yunet.py INPUT OUTPUT [--zoom 1.0] [--smooth 41] [--model scripts/yunet.onnx]"""
 # ── vibe-editing portable path bootstrap (auto-inserted) ──
 import os as _os, sys as _sys
 def _acq_root():

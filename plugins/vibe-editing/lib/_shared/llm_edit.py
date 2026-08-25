@@ -14,7 +14,7 @@ examples, rambles) that only an LLM can judge.
 Usage:
     python3 llm_edit.py transcript.json \
         --start 311.03 --end 340.00 \
-        --out /tmp/clip-A-llm-cuts.json
+        --out 10_WORK/clip-A-llm-cuts.json
 
 Requires: ANTHROPIC_API_KEY in env.
 """

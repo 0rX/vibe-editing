@@ -26,7 +26,7 @@ Claude installs what it needs, then asks about your brand — logo, fonts, color
 ### ✂️ COPY FROM HERE ⬇️
 
 ```
-You're setting up "Vibe Editing" for me on this Mac. I am NOT technical — so do everything
+You're setting up "Vibe Editing" for me on this PC. I am NOT technical — so do everything
 yourself, never make me run a terminal command or edit a file by hand, and explain each step in
 plain English. Keep a visible to-do list of the steps below and check them off as you go.
 
@@ -34,10 +34,10 @@ plain English. Keep a visible to-do list of the steps below and check them off a
    - Clone it into my Documents folder:
        git clone https://github.com/maddexritter-rgb/vibe-editing.git
    - Then do all the work inside that "vibe-editing" folder.
-   - If git or Homebrew isn't installed, install them first, yourself.
+   - If git or winget isn't installed, install them first, yourself.
 
 2) SET UP MY MACHINE (install only what's missing — everything here is free + open-source)
-   - Run:  python3 plugins/vibe-editing/doctor.py   (it shows what's installed vs missing).
+   - Run:  python plugins/vibe-editing/doctor.py   (it shows what's installed vs missing).
    - Install ONLY the missing pieces yourself: ffmpeg, yt-dlp, tesseract, rclone, and a Python
      virtual environment (.venv) with the kit's libraries + faster-whisper (offline transcription).
    - Re-run doctor.py until it prints READY, then tell me in plain English that it's ready.
@@ -102,7 +102,7 @@ English. Only use this kit — don't pull tools or keys from anywhere else on my
 
 | Tool | What it's for |
 |---|---|
-| **Homebrew** | Mac package manager (only if you don't already have it) |
+| **winget** | Windows package manager (ships with Windows 10 1809+ and Windows 11) |
 | **ffmpeg** | the engine — cuts, encodes, reframes, extracts frames |
 | **yt-dlp** | pulls a video down from a YouTube / URL link |
 | **tesseract** | OCR — the caption audit reads your burned-in captions to verify them |

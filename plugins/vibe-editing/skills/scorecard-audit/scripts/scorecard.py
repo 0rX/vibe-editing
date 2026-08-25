@@ -25,6 +25,14 @@ Auth: requires ANTHROPIC_API_KEY (same as correct_transcript.py). Falls back to
 `claude -p` CLI if SDK + key are unavailable.
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isdir(_os.path.join(_d, '.claude-plugin')):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _os.path.join(_d, 'lib', '_shared'))
+from winenv import PY  # noqa: E402
+# ── end winenv bootstrap ──
 
 # ── engine bundled-keys autoload (config/keys.env) ──
 import os as _ko, pathlib as _kp
@@ -231,7 +239,7 @@ def autolog_failures_as_lessons(card: dict, client: str, clip_slug: str,
             continue
         try:
             subprocess.run(
-                ["python3", str(TRACKER), "lesson", clip_slug,
+                [PY, str(TRACKER), "lesson", clip_slug,
                  "--client", client,
                  "--issue", issue,
                  "--when", when_clause,

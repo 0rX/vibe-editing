@@ -44,7 +44,7 @@ all route through this one engine. Never duplicate its rules; never hand-roll a 
 ## The ONE command — caption any clip
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_caption.py <input.mp4> <output.mp4> [--context "<hint>"]
+python ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_caption.py <input.mp4> <output.mp4> [--context "<hint>"]
 ```
 
 This is video-in → spice-captioned-video-out. It runs the locked chain:
@@ -70,7 +70,7 @@ If you ALREADY have a spice transcript + style stream (e.g. inside `/edit`'s ren
 call the renderer directly with the one preset:
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/generate_spice.py <spice_words.json> \
+python ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/generate_spice.py <spice_words.json> \
     --preset ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/presets/spice.json \
     --style <director.json> --out subs.ass --burn <clip.mp4> --burn-out <final.mp4>
 ```
@@ -127,7 +127,7 @@ intensity 0.70/1.0, down-right offset, all font-relative (`spice.json` shadow bl
 
 For a numbered listicle, after `generate_spice.py` (before the burn) add the persistent "N. CATEGORY" pill:
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_tabs.py <captions.ass> --clip-end <dur> --style glass --y 1140 \
+python ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_tabs.py <captions.ass> --clip-end <dur> --style glass --y 1140 \
     --point "3.38:#1:OFFER" --point "8.02:#2:MARKETING" ...   # item_start:#N:CATEGORY (hook gets no pill)
 # then re-burn. The listicle-short skill (build_short.py) wires this automatically.
 ```
@@ -135,8 +135,8 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_tabs.py <captio
 ## Ship gates (run before handoff)
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/sf-audit/scripts/audit.py --clip <captioned.mp4> --subtitles <captions.ass> --client <slug>
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/scorecard-audit/scripts/scorecard.py --transcript <transcript.json> --clip <captioned.mp4> --client <slug> --exit-on-fail
+python ${CLAUDE_PLUGIN_ROOT}/skills/sf-audit/scripts/audit.py --clip <captioned.mp4> --subtitles <captions.ass> --client <slug>
+python ${CLAUDE_PLUGIN_ROOT}/skills/scorecard-audit/scripts/scorecard.py --transcript <transcript.json> --clip <captioned.mp4> --client <slug> --exit-on-fail
 ```
 
 Plus the always-on `caption_qc.py` guard (structural: confirms the spice gblur path) and `caption_lint.py`

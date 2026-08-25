@@ -49,6 +49,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from winenv import PY, work_dir  # noqa: E402
 import argparse
 import json
 import subprocess
@@ -61,7 +62,7 @@ H2V  = _acq("horizontal-to-vertical/scripts")
 
 def run_filler_detection(transcript, start, end, silence_map, out_path):
     subprocess.run(
-        ["python3", str(EDIT / "detect_fillers.py"), str(transcript),
+        [PY, str(EDIT / "detect_fillers.py"), str(transcript),
          "--start", str(start), "--end", str(end),
          "--silence-map", str(silence_map), "--out", str(out_path)],
         check=True, capture_output=True,
@@ -77,7 +78,7 @@ def merge_manual_cuts(filler_path: Path, manual_cuts: list[dict]):
 
 def cut_clip(mp4, wav, offset, start, end, fillers, out):
     subprocess.run(
-        ["python3", str(EDIT / "cut_clip.py"),
+        [PY, str(EDIT / "cut_clip.py"),
          "--mp4", mp4, "--wav", wav, "--wav-offset", str(offset),
          "--start", str(start), "--end", str(end),
          "--fillers", str(fillers),
@@ -89,7 +90,7 @@ def cut_clip(mp4, wav, offset, start, end, fillers, out):
 
 def reframe(input_path, output_path):
     subprocess.run(
-        ["python3", str(H2V / "qa_reframe_v2.py"),
+        [PY, str(H2V / "qa_reframe_v2.py"),
          str(input_path), str(output_path),
          "--preset", "talking-head", "--res", "1080"],
         check=True, capture_output=True,
@@ -158,7 +159,7 @@ def process(manifest: dict, h_dir: Path, v_dir: Path, review_dir: Path,
             end = clip["end"]
             slug = clip["slug"]
             manual_cuts = clip.get("manual_cuts", [])
-            filler_path = Path(f"/tmp/mine-work/fillers/{label}.json")
+            filler_path = work_dir("mine-work/fillers") / f"{label}.json"
             filler_path.parent.mkdir(parents=True, exist_ok=True)
 
             print(f"\n===== {label} iter {iteration+1}  {start:.2f}-{end:.2f} =====", flush=True)
@@ -179,7 +180,7 @@ def process(manifest: dict, h_dir: Path, v_dir: Path, review_dir: Path,
             # Review
             review_path = review_dir / f"{label}.review.json"
             subprocess.run(
-                ["python3", str(EDIT / "review_clip.py"), str(v_out),
+                [PY, str(EDIT / "review_clip.py"), str(v_out),
                  "--transcript", str(transcript),
                  "--start", str(start), "--end", str(end),
                  "--fillers", str(filler_path),
@@ -227,7 +228,7 @@ def main() -> int:
                     default=Path.home() / "Downloads" / "clips-mined")
     ap.add_argument("--v-dir", type=Path,
                     default=Path.home() / "Downloads" / "clips-vertical")
-    ap.add_argument("--review-dir", type=Path, default=Path("/tmp/mine-work/reviews"))
+    ap.add_argument("--review-dir", type=Path, default=work_dir("mine-work/reviews"))
     ap.add_argument("--max-iterations", type=int, default=2)
     args = ap.parse_args()
 

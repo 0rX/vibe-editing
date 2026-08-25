@@ -53,9 +53,9 @@
 
 **Do:** scaffold the project, transcribe word-level, detect speakers + cameras.
 ```
-bash ${CLAUDE_PLUGIN_ROOT}/vault/scripts/new_project.sh speaker <ShortName>      # → speaker/<date>_<ShortName>/{00_SOURCE,10_WORK,20_DELIVER}
+python ${CLAUDE_PLUGIN_ROOT}/vault/scripts/new_project.py speaker <ShortName>      # → speaker/<date>_<ShortName>/{00_SOURCE,10_WORK,20_DELIVER}
 # copy raw into 00_SOURCE (never edit originals)
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/transcribe_groq.py <src> <boundaries.json> --out 10_WORK/transcripts   # word-level
+python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/transcribe_groq.py <src> <boundaries.json> --out 10_WORK/transcripts   # word-level
 # 2-mic stereo (host/guest split) → transcribe_isolated.py for clean per-speaker attribution
 ```
 **Why:** word-level timestamps are required for frame-precise cutting; speaker/camera detection drives reframe + caption color.
@@ -96,17 +96,17 @@ This is the editorial heart. For each clip, choose keep-spans (by word index) pe
 
 > **🔒 EDITORIAL GATE (run BEFORE render — `qa_editorial_score.py`):** After designing each clip's keep-spans, score the resulting spoken transcript:
 > ```
-> python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/qa_editorial_score.py --text "<the clip's spoken words>"
+> python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/qa_editorial_score.py --text "<the clip's spoken words>"
 > # or batch: --transcript-json {name:{title,transcript}}
 > ```
 > It scores hook class / payoff class / portability / one-arc / opener cleanliness against the 250-pair winner-vs-loser data and **exits 1 (BLOCK) on the bottom-25 patterns**: plain_statement opener, wind_down/tactic/cta ending, failed cold portability, or a mid-fragment open. Fix the EDL until it PASSES. (Validated 2026-06-17: it correctly FAILED all 9 Tier1 Q&A clips — flat business-description openers + bare-tactic endings — the exact editorial weakness this batch shipped.)
 - **CUT the CTA outro** ("company.com/roadmap", "free gift", "link in bio") — 96%. Discard the back ~22% of the source.
 - Cut word-precise; remove dead air + filler.
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/precision_cut.py --src 00_SOURCE/<raw> --transcript 10_WORK/transcripts/<t>.json \
+python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/precision_cut.py --src 00_SOURCE/<raw> --transcript 10_WORK/transcripts/<t>.json \
         --keep '[[a,b],[c,d],...]' --out 10_WORK/cuts/<clip>.mp4     # spans END on the true acoustic word-end
 ```
-Validate boundaries: `python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/window_validator.py` (9-rule gate).
+Validate boundaries: `python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/window_validator.py` (9-rule gate).
 **DONE-WHEN:** the clip reads as ONE arc, opens on the number, ends on the payoff, no CTA, no fragment/clipped word.
 
 ---
@@ -127,12 +127,12 @@ Measured grammar (71 Q&A shorts): **open on split-screen, then cut to the speake
 (The simplest valid grammar is the floor: guest-single question → ONE cut at the handoff → Speaker-single answer held to the payoff, no split at all. Use it when only two clean angles exist.)
 ```
 # single angles (Y-LOCK + face-box center):
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/qa_reframe_v2.py IN OUT --preset stage   # Speaker on stage
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/qa_reframe_v2.py IN OUT --preset guest        # questioner
+python ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/qa_reframe_v2.py IN OUT --preset stage   # Speaker on stage
+python ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/qa_reframe_v2.py IN OUT --preset guest        # questioner
 # split-screen: reframe each angle (split-top + guest) then stack:
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/make_splitscreen.py TOP BOTTOM OUT   # gaussian seam
+python ${CLAUDE_PLUGIN_ROOT}/skills/horizontal-to-vertical/scripts/make_splitscreen.py TOP BOTTOM OUT   # gaussian seam
 # OR the whole multicam Q&A in one pass from an EDL:
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/qa_assembly.py --edl 10_WORK/edl.json --sync 10_WORK/sync.json --out 10_WORK/<clip>_reframed.mp4
+python ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/qa_assembly.py --edl 10_WORK/edl.json --sync 10_WORK/sync.json --out 10_WORK/<clip>_reframed.mp4
 ```
 **🔒 `qa_sync.json` REQUIRED KEYS (NON-NEGOTIABLE #1 + #2):**
 ```json
@@ -155,7 +155,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/edit/scripts/qa_assembly.py --edl 10_WORK/e
 ## STEP 6 — CAPTIONS
 
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_caption.py 10_WORK/<clip>_reframed.mp4 10_WORK/<clip>_capped.mp4 --context "<hook hint>"
+python ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_caption.py 10_WORK/<clip>_reframed.mp4 10_WORK/<clip>_capped.mp4 --context "<hook hint>"
 ```
 - **Color = speaker: white = host (Speaker), yellow = guest — 99%. EYEBALL it; diarization mis-tags.**
 - **Position rides the SEAM / center** (NOT lower-third). On a split, captions sit on the seam between panels.
@@ -185,7 +185,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/caption-clips/scripts/spice_caption.py 10_W
 ## STEP 7 — MUSIC
 
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/lib/_shared/pick_music.py --folder "<vibe>" --used "<batch picks>"   # distinct track per clip
+python ${CLAUDE_PLUGIN_ROOT}/lib/_shared/pick_music.py --folder "<vibe>" --used "<batch picks>"   # distinct track per clip
 ```
 Loudnorm the bed ~10–13 dB under the −16 LUFS voice; gentle fades. Never reuse a track within a batch.
 
@@ -220,8 +220,8 @@ These catch the defect classes Operator reviewed Guest for. Failures here = re-d
 
 ### 8b — BUILD via qa_assembly OR the manifest engine
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/scripts/init_manifest.py <project> --pipeline qa
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project>
+python ${CLAUDE_PLUGIN_ROOT}/skills/render/scripts/init_manifest.py <project> --pipeline qa
+python ${CLAUDE_PLUGIN_ROOT}/skills/render/engine.py <project>
 # OR direct: qa_assembly.py --edl ... --sync ... --music ... --music-ss <N> --corrections <path> --out ...
 ```
 

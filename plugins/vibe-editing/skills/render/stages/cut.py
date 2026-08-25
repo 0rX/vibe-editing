@@ -43,6 +43,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from fast_encode import encoder_args_bitrate  # noqa: E402
 import json
 from pathlib import Path
 
@@ -113,7 +114,7 @@ def run(work_dir, config, inputs, inputs_meta, project, manifest, out_path):
             "-ss", f"{in_t:.3f}", "-i", str(seg_a),
             "-t", f"{dur:.3f}",
             "-map", "0:v", "-map", "1:a",
-            "-c:v", "h264_videotoolbox", "-b:v", "25M", "-tag:v", "avc1", "-pix_fmt", "yuv420p",
+            *encoder_args_bitrate("25M"),
             "-c:a", "aac", "-b:a", "192k",
             "-af", fade,
             "-movflags", "+faststart", str(seg)])
@@ -129,7 +130,7 @@ def run(work_dir, config, inputs, inputs_meta, project, manifest, out_path):
     fc = "".join(fc_streams) + f"concat=n={len(seg_files)}:v=1:a=1[v][a]"
     ff(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
         *fc_inputs, "-filter_complex", fc, "-map", "[v]", "-map", "[a]",
-        "-c:v", "h264_videotoolbox", "-b:v", "20M", "-tag:v", "avc1", "-pix_fmt", "yuv420p",
+        *encoder_args_bitrate("20M"),
         "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out_path)])
 
     fps = ffprobe_fps(out_path)

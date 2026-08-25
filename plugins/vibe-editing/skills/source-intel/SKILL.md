@@ -77,7 +77,7 @@ description: >
 ## How to run
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/source-intel/scripts/analyze.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/source-intel/scripts/analyze.py \
     --source 00_SOURCE/video.mp4 \
     --out 10_WORK/source_intel.json
 ```

@@ -3,7 +3,7 @@
 The drop-in design system behind the high-end, brand-native "holy shit" presentation/demo video
 (see the playbook + **the gotchas** in `../../SKILL.md` → "PREMIUM LIQUID-GLASS DEMO / EXPLAINER VIDEOS").
 
-**Worked example:** `~/Downloads/engine/2026-06-12_WorkflowDemo/10_WORK/engine-workflow-demo` — the
+**Worked example:** `%USERPROFILE%/Videos/vibe-editing/engine/2026-06-12_WorkflowDemo/10_WORK/engine-workflow-demo` — the
 `FlywheelFilm` composition (a content-flywheel demo for Speaker / company.com). 1920×1080 @ 30fps,
 bold lower-thirds, no voiceover.
 

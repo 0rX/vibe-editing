@@ -11,6 +11,14 @@ Config:
     }
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os2, sys as _sys2
+_d2 = _os2.path.dirname(_os2.path.abspath(__file__))
+while _d2 != _os2.path.dirname(_d2) and not _os2.path.isdir(_os2.path.join(_d2, '.claude-plugin')):
+    _d2 = _os2.path.dirname(_d2)
+_sys2.path.insert(0, _os2.path.join(_d2, 'lib', '_shared'))
+from fast_encode import encoder_args_bitrate  # noqa: E402
+# ── end winenv bootstrap ──
 
 from pathlib import Path
 
@@ -31,7 +39,7 @@ def run(work_dir, config, inputs, inputs_meta, project, manifest, out_path):
             "-af", f"highpass=f=80,loudnorm=I={voice_lufs}:LRA=11:TP=-1.5,"
                    f"alimiter=limit={limiter}:level=disabled",
             "-map", "0:v", "-map", "0:a",
-            "-c:v", "h264_videotoolbox", "-b:v", "14M", "-tag:v", "avc1", "-pix_fmt", "yuv420p",
+            *encoder_args_bitrate("14M"),
             "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out_path)])
         return {"out": str(out_path), "meta": {
             "music": None, "voice_lufs": voice_lufs, "limiter": limiter,
@@ -58,7 +66,7 @@ def run(work_dir, config, inputs, inputs_meta, project, manifest, out_path):
         "-i", prior, "-i", str(music),
         "-filter_complex", fc,
         "-map", "0:v", "-map", "[a]",
-        "-c:v", "h264_videotoolbox", "-b:v", "14M", "-tag:v", "avc1", "-pix_fmt", "yuv420p",
+        *encoder_args_bitrate("14M"),
         "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out_path)])
 
     return {"out": str(out_path), "meta": {

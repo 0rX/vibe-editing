@@ -30,6 +30,14 @@ SPLIT MODES (2026-06-12) — the caption pipeline has two halves with different 
 The render `captions` stage uses these to cache GENERATE across pixel-only revisions (so a reframe
 tweak reuses the styled caption file and skips the director re-roll — faster AND byte-consistent).
 """
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isdir(_os.path.join(_d, '.claude-plugin')):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _os.path.join(_d, 'lib', '_shared'))
+from winenv import PY, read_key  # noqa: E402
+# ── end winenv bootstrap ──
 # ── engine bundled-keys autoload (config/keys.env) ──
 import os as _ko, pathlib as _kp
 def _acq_load_keys():
@@ -60,12 +68,7 @@ def load_key(name):
     v = os.environ.get(name)
     if v:
         return v
-    zshrc = Path.home() / ".zshrc"
-    if zshrc.exists():
-        m = re.search(rf'(?m)^\s*export\s+{name}=["\']?([^"\'\n]+)', zshrc.read_text())
-        if m:
-            return m.group(1).strip()
-    return None
+    return read_key(name) or None
 
 
 def run(cmd, step, env, fatal=True):
@@ -111,7 +114,7 @@ def do_gen(inp, gendir, env, args):
         _sh.copyfile(args.words, word)
         print(f"spice_caption: pinned transcript {args.words} — transcription skipped", flush=True)
     else:
-        run(["python3", str(SC / "transcribe_lv3.py"), str(inp), "--out", str(word),
+        run([PY, str(SC / "transcribe_lv3.py"), str(inp), "--out", str(word),
              "--start", "0", "--end", f"{dur:.3f}"], "transcribe (Groq)", env)
     if args.corrections and args.corrections.exists():
         import json as _json, re as _re
@@ -157,19 +160,19 @@ def do_gen(inp, gendir, env, args):
     # and overflowing the tail). Pinned times win; align only helps RAW ASR output.
     pinned = bool(args.words and Path(args.words).exists())
     if not pinned:
-        run(["python3", str(SC / "align_to_silence.py"), "--in", str(word), "--out", str(word),
+        run([PY, str(SC / "align_to_silence.py"), "--in", str(word), "--out", str(word),
              "--audio", str(inp)], "align-to-silence (onset)", env, fatal=False)
     else:
         print("spice_caption: pinned transcript — skipping align-to-silence (pinned times authoritative)", flush=True)
     # ONE deterministic caption-text formatter (The reference editor's rules), timestamp-preserving.
-    run(["python3", str(SC / "spice_format.py"), "--words", str(word), str(spice)],
+    run([PY, str(SC / "spice_format.py"), "--words", str(word), str(spice)],
         "spice-format (caption normalize)", env)
     ctx = args.context or (
         "the creator short-form clip. Read the TRANSCRIPT: IF a guest/caller/attendee asks a question "
         "or describes THEIR situation and Speaker answers, emit voice_spans over every contiguous GUEST line "
         "(rendered YELLOW); Speaker's lines stay WHITE. IF Speaker speaks alone, emit NO guest spans. If unsure, "
         "default to WHITE.")
-    run(["python3", str(SC / "caption_director.py"), str(spice), "--out", str(stream), "--context", ctx],
+    run([PY, str(SC / "caption_director.py"), str(spice), "--out", str(stream), "--context", ctx],
         "director", env, fatal=False)
     return spice, stream
 
@@ -194,11 +197,11 @@ def do_burn(inp, out, gendir, work, env, args, preset):
         print(f"spice_caption: using provided layout {layout.name} (per-section Y)", flush=True)
     elif not args.no_layout and (LAYOUT / "layout_analyze.py").exists():
         layout = work / "layout.json"
-        run(["python3", str(LAYOUT / "layout_analyze.py"), str(inp), str(layout), "--sample-every", "1"],
+        run([PY, str(LAYOUT / "layout_analyze.py"), str(inp), str(layout), "--sample-every", "1"],
             "layout analyze (per-angle Y)", env, fatal=False)
     if args.no_layout and not (args.layout_file and Path(args.layout_file).exists()):
         print("spice_caption: --no-layout -> using preset STATIC y_percent_from_top", flush=True)
-    spice_cmd = ["python3", str(SC / "generate_spice.py"), str(spice), "--preset", str(preset),
+    spice_cmd = [PY, str(SC / "generate_spice.py"), str(spice), "--preset", str(preset),
                  "--out", str(ass), "--burn", str(inp), "--burn-out", str(out)]
     if stream.exists():
         spice_cmd.extend(["--style", str(stream)])
@@ -254,7 +257,7 @@ def main():
     will_transcribe = (not args.burn_from) and not (args.words and Path(args.words).exists())
     groq = load_key("GROQ_API_KEY")
     if will_transcribe and not groq:
-        raise SystemExit("missing GROQ_API_KEY (transcription) — not in env or ~/.zshrc")
+        raise SystemExit("missing GROQ_API_KEY (transcription) — not in env or config/keys.env")
     if groq:
         env["GROQ_API_KEY"] = groq
     ak = load_key("ANTHROPIC_API_KEY")

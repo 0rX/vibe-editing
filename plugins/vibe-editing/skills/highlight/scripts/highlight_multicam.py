@@ -34,6 +34,7 @@ VIBE_ROOT = _vibe_root()
 _sys.path.insert(0, _os.path.join(VIBE_ROOT, "lib", "_shared"))
 REFRAME = _os.path.join(VIBE_ROOT, "skills", "highlight", "scripts", "highlight_reframe16.py")
 # ── end bootstrap ──
+from winenv import PY  # noqa: E402  (path set by bootstrap above)
 import argparse, json, subprocess, tempfile, shutil
 try:
     from fast_encode import encoder_args
@@ -151,7 +152,7 @@ def main():
                 cam, ss, preset = a.acam, s + OA, "host16"
             run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{ss:.3f}", "-t", f"{dur:.3f}", "-i", cam,
                  "-an", "-c:v", "libx264", "-crf", "20", "-preset", "ultrafast", clip])
-            _cmd = ["python3", REFRAME, clip, out, "--preset", preset, "--res", "1080"]
+            _cmd = [PY, REFRAME, clip, out, "--preset", preset, "--res", "1080"]
             _roi = a.guest_roi if shot == "guest" else a.host_roi
             if _roi:
                 _cmd += ["--roi", *[f"{v}" for v in _roi]]

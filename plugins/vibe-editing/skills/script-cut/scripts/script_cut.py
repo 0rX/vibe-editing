@@ -45,6 +45,14 @@ KEY LESSONS BAKED IN (each was a real bug we hit):
   * true_end(): MFA labels soft endings (-ing/-s/-ve) early. Extend each cut to the word's TRUE acoustic
     end (where energy falls into the trailing silence) so tails aren't clipped and payoffs land.
 """
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os3, sys as _sys3
+_d3 = _os3.path.dirname(_os3.path.abspath(__file__))
+while _d3 != _os3.path.dirname(_d3) and not _os3.path.isdir(_os3.path.join(_d3, '.claude-plugin')):
+    _d3 = _os3.path.dirname(_d3)
+_sys3.path.insert(0, _os3.path.join(_d3, 'lib', '_shared'))
+from winenv import tool_dir  # noqa: E402
+# ── end winenv bootstrap ──
 import sys, json, glob, os, subprocess, re, shutil, argparse
 import numpy as _np
 from num2words import num2words
@@ -64,8 +72,8 @@ PAD     = 0.04
 src     = A.source
 NAME    = A.title or os.path.splitext(os.path.basename(A.source))[0]
 os.makedirs(A.out, exist_ok=True)
-MAMBA    = os.environ.get("MFA_MAMBA", "/tmp/bin/micromamba")
-MFA_ENV  = os.environ.get("MFA_ENV", "/tmp/mfa_env")
+MAMBA    = os.environ.get("MFA_MAMBA", str(tool_dir("script-cut") / "bin" / "micromamba.exe"))
+MFA_ENV  = os.environ.get("MFA_ENV", str(tool_dir("script-cut") / "mfa_env"))
 ACOUSTIC = os.environ.get("MFA_ACOUSTIC", "english_us_arpa")
 DICT     = os.environ.get("MFA_DICT", "english_us_arpa")
 

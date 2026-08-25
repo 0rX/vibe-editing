@@ -11,7 +11,7 @@ HOW (no vidstab — vidstab rubber-banded/swam the frame):
           loose enough to kill per-frame detection noise.
   pass 2: per-frame 9:16 crop centered so the guest's face maps to (0.5, eye_y) EVERY frame ->
           the guest is pinned dead-center, the shake is cancelled, background drifts naturally.
-  Render: crop+resize per frame in OpenCV, pipe raw -> ffmpeg h264_videotoolbox, remux source audio.
+  Render: crop+resize per frame in OpenCV, pipe raw -> ffmpeg (encoder picked by fast_encode), remux source audio.
 """
 # ── vibe-editing portable path bootstrap (auto-inserted) ──
 import os as _os, sys as _sys
@@ -40,6 +40,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from fast_encode import encoder_args_bitrate  # noqa: E402  (path set by bootstrap above)
 import argparse, subprocess, sys
 import cv2, numpy as np
 
@@ -120,7 +121,7 @@ def main():
         "ffmpeg", "-y", "-loglevel", "error",
         "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", f"{a.ow}x{a.oh}", "-r", fr_str, "-i", "-",
         "-i", a.source, "-map", "0:v", "-map", "1:a?",
-        "-r", fr_str, "-vsync", "cfr", "-c:v", "h264_videotoolbox", "-b:v", "16M",
+        "-r", fr_str, "-vsync", "cfr", *encoder_args_bitrate("16M"),
         "-c:a", "aac", "-b:a", "192k", "-ar", "44100", "-shortest", a.out], stdin=subprocess.PIPE)
     cap = cv2.VideoCapture(a.source); k = 0
     while k < N:

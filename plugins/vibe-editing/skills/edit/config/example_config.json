@@ -1,7 +1,7 @@
 {
   "_comment": "Template config for multicam-podcast-clipper. Copy this to <project_root>/10_WORK/multicam_config.json and tune per-project. Episode paths are relative to project_root. Music folder + ANTHROPIC_API_KEY are read from env / global. Per-brand crops/colors/music vibes live in brand memory (e.g. project_client_podcast_shorts_2026-06-05.md), not here.",
 
-  "project_root": "~/Downloads/<brand>/<YYYY-MM-DD>_<slug>",
+  "project_root": "%USERPROFILE%/Videos/vibe-editing/<brand>/<YYYY-MM-DD>_<slug>",
   "client_slug": "SPEAKER",
   "context": "Two-person podcast (host + guest) — punchy conversational segments. Host carries the bulk of the talk; guest lands the contrast / punchline. Quotes / role-play / 'say this' lines render italic + yellow.",
 

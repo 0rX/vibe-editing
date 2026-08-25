@@ -1,6 +1,6 @@
 # Q&A V1 BASELINE — LOCKED 2026-06-04 (build on this)
 
-**This is the known-good V1.** It produced `~/Downloads/ExampleQA_QA_v6_1080.mp4` (the Ricky
+**This is the known-good V1.** It produced `%USERPROFILE%/Videos/vibe-editing/ExampleQA_QA_v6_1080.mp4` (the Ricky
 "never stop a flow" clip) — found, cut, synced, diarized, reframed, switched, captioned, graded,
 clean-audio, end-to-end from raw 3-cam + iso-mic footage. User signed off: "much better, make this our new v1."
 Reproduce/extend from here. Do NOT regress these settings.

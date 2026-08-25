@@ -52,6 +52,7 @@ def _acqv(p):
 if VIBE_SHARED not in _sys.path:
     _sys.path.insert(0, VIBE_SHARED)
 # ── end bootstrap ──
+from fast_encode import encoder_args_bitrate  # noqa: E402
 import subprocess, os, sys
 from pathlib import Path
 
@@ -77,7 +78,7 @@ SECTIONS = [
 
 SFX = H / "public/audio"
 W   = P / "10_WORK/build"; W.mkdir(parents=True, exist_ok=True)
-ENC = ["-c:v", "h264_videotoolbox", "-b:v", "12M", "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000", "-ac", "2"]
+ENC = [*encoder_args_bitrate("12M"), "-c:a", "aac", "-ar", "48000", "-ac", "2"]
 NCARDS = len(SECTIONS)
 
 def run(args):

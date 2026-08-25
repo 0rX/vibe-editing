@@ -73,9 +73,9 @@ When captions are **burnt in** (no `.ass`/`.srt` sidecar), checks #1 (spelling),
 
 ```bash
 W=${CLAUDE_PLUGIN_ROOT}/skills/watch/scripts
-python3 "$W/caption_ocr.py"   CLIP.mp4 --interval 0.5   # caption presence + y-center placement, RELIABLE (#3,#7)
-python3 "$W/contact_sheet.py" CLIP.mp4 --n 12 --cols 4  # then Read the PNG with your own eyes: spelling (#1), framing (#13/#14), caption look (#5/#6)
-python3 "$W/probe.py"         CLIP.mp4                    # loudness/peak/clipping (#8-#11), black frames (#15)
+python "$W/caption_ocr.py"   CLIP.mp4 --interval 0.5   # caption presence + y-center placement, RELIABLE (#3,#7)
+python "$W/contact_sheet.py" CLIP.mp4 --n 12 --cols 4  # then Read the PNG with your own eyes: spelling (#1), framing (#13/#14), caption look (#5/#6)
+python "$W/probe.py"         CLIP.mp4                    # loudness/peak/clipping (#8-#11), black frames (#15)
 ```
 
 OCR is **advisory** — confirm any flagged spelling/placement on the contact sheet with your own eyes. Caption y-center target ~65–80% of height (below the chin).
@@ -85,12 +85,12 @@ OCR is **advisory** — confirm any flagged spelling/placement on the contact sh
 ## Run
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/sf-audit/scripts/audit.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/sf-audit/scripts/audit.py \
   --clip path/to/final.mp4 \
   --subtitles path/to/captions.ass \
   --speaker-map path/to/speaker.json \
   --platform instagram \
-  --out ~/Downloads/audits/<clip-stem>.audit.md
+  --out %USERPROFILE%/Videos/vibe-editing/audits/<clip-stem>.audit.md
 ```
 
 Output:

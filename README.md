@@ -1,6 +1,21 @@
-# Vibe Editing — starter kit
+# Vibe Editing — starter kit (Windows)
 
 **Raw footage in → finished, captioned, self-audited vertical clips out, with one command.**
+
+> **This is the Windows port** of [maddexritter-rgb/vibe-editing](https://github.com/maddexritter-rgb/vibe-editing) (MIT).
+> The upstream kit is macOS-only — Homebrew, VideoToolbox, `/tmp`, `flock`, `python3`, `~/.zshrc`.
+> This fork replaces all of that with Windows equivalents and picks the video encoder at
+> runtime, so it runs on **any** Windows PC:
+>
+> | Hardware | Encoder used |
+> |---|---|
+> | NVIDIA GPU | `h264_nvenc` |
+> | Intel iGPU (Quick Sync) | `h264_qsv` |
+> | AMD GPU | `h264_amf` |
+> | anything else | `libx264` (software) |
+>
+> **Requirements:** Windows 10/11, Python 3.10+, a paid Claude plan. Run `.\setup.ps1` and it
+> installs the rest. See `PORTING.md` for what changed and why.
 
 The full short-form pipeline as a Claude Code plugin: ingest → transcribe → mine the best
 moments (with a real editorial rubric) → hand-cut → face-track to 9:16 → caption → mix music →
@@ -12,11 +27,11 @@ render → 6-gate audit → deliver.
 
 ## Quickstart
 ```
-./setup.sh                         # installs ffmpeg + deps, runs a health check
+.\setup.ps1                         # installs ffmpeg + deps, runs a health check
 # (optional) paste a free Groq key in plugins/vibe-editing/config/keys.env
-/edit <your youtube link>          # in Claude Code   — or:   ./bin/vibe-editing "<link>"
+/edit <your youtube link>          # in Claude Code   — or:   .\bin\vibe-editing.ps1 "<link>"
 ```
-Check readiness any time: `python3 plugins/vibe-editing/doctor.py`
+Check readiness any time: `python plugins/vibe-editing/doctor.py`
 
 ## What's INCLUDED — the full method
 The complete editorial brain ships here (anonymized): the clip-selection rubric, the cut logic,

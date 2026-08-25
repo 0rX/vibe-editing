@@ -19,7 +19,7 @@ description: >
 ## How to run
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/skills/audit-script/scripts/check.py \
+python ${CLAUDE_PLUGIN_ROOT}/skills/audit-script/scripts/check.py \
     --clip 20_DELIVER/v1/clip.mp4 \
     --out 10_WORK/audit_script.json
 ```

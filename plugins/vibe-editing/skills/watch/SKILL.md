@@ -64,12 +64,12 @@ For a quick local overview without the MCP: `contact_sheet.py FILE --n 16 --cols
 
 ```bash
 # my render vs a reference reel (style, caption look, framing, pacing)
-python3 scripts/ab_diff.py MINE.mp4 REFERENCE.mp4 --mode side --n 6 \
-    --label-a mine --label-b ref --out ~/Downloads/compare_side.png
+python scripts/ab_diff.py MINE.mp4 REFERENCE.mp4 --mode side --n 6 \
+    --label-a mine --label-b ref --out %USERPROFILE%/Videos/vibe-editing/compare_side.png
 
 # v1 vs v2 of the SAME clip — red highlights exactly what moved/changed
-python3 scripts/ab_diff.py clip_v1.mp4 clip_v2.mp4 --mode diff --n 9 \
-    --out ~/Downloads/compare_diff.png
+python scripts/ab_diff.py clip_v1.mp4 clip_v2.mp4 --mode diff --n 9 \
+    --out %USERPROFILE%/Videos/vibe-editing/compare_diff.png
 ```
 Then Read the PNG and report differences concretely (timestamp + what changed).
 
@@ -77,14 +77,14 @@ Then Read the PNG and report differences concretely (timestamp + what changed).
 
 ```bash
 # caption presence + vertical placement (reliable); OCR text is advisory
-python3 scripts/caption_ocr.py final.mp4 --interval 0.5 --out ~/Downloads/audits/final_captions.json
+python scripts/caption_ocr.py final.mp4 --interval 0.5 --out %USERPROFILE%/Videos/vibe-editing/audits/final_captions.json
 # for EXACT caption text / spelling, read the contact sheet below with your own eyes
 
 # ears + pacing against the Team Speaker gate
-python3 scripts/probe.py final.mp4 --out ~/Downloads/audits/final_probe.json
+python scripts/probe.py final.mp4 --out %USERPROFILE%/Videos/vibe-editing/audits/final_probe.json
 
 # visual confirmation of framing / safe-zones / caption look
-python3 scripts/contact_sheet.py final.mp4 --n 12 --cols 4
+python scripts/contact_sheet.py final.mp4 --n 12 --cols 4
 ```
 Caption-placement target per SOP: text y-center ~65-80% of height (below the chin).
 OCR is **advisory** — heavy/stylized fonts can misread; the contact sheet is the final eye.

@@ -13,7 +13,7 @@ Worker caps (matter — too many concurrent encodes thrash the 2 media engines +
   - kind="cpu"     (x264 / generic ffmpeg / whisper): min(cores-2, 8)
 
 **MACHINE-WIDE GATE** — every encode job goes through `encode_gate.gate()`, a flock-based
-semaphore in /tmp/acq_encode_slots/ that bounds TOTAL concurrent encodes across ALL Python
+semaphore in the scratch dir (winenv.work_dir) that bounds TOTAL concurrent encodes across ALL Python
 processes / Claude sessions on this Mac. Without it, 6 sessions each honoring "cap=3"
 spawn 6×3 = 18 ffmpegs fighting over the 2 media engines. With it, the system as a whole
 runs at most VIBE_ENCODE_SLOTS (default 3) regardless of how many callers. Disable with

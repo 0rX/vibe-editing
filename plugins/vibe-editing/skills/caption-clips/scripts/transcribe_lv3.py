@@ -23,6 +23,14 @@ Output JSON per clip:
       "words": [ {"word": str, "start": float, "end": float, "prob": float}, ... ] }
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os3, sys as _sys3
+_d3 = _os3.path.dirname(_os3.path.abspath(__file__))
+while _d3 != _os3.path.dirname(_d3) and not _os3.path.isdir(_os3.path.join(_d3, '.claude-plugin')):
+    _d3 = _os3.path.dirname(_d3)
+_sys3.path.insert(0, _os3.path.join(_d3, 'lib', '_shared'))
+from winenv import work_dir  # noqa: E402
+# ── end winenv bootstrap ──
 # ── engine bundled-keys autoload (config/keys.env) ──
 import os as _ko, pathlib as _kp
 def _acq_load_keys():
@@ -45,15 +53,15 @@ from pathlib import Path
 
 
 def load_zshrc_api_keys() -> None:
-    """Lift API_KEY/TOKEN exports from ~/.zshrc into os.environ."""
-    zshrc = Path.home() / ".zshrc"
-    if not zshrc.exists():
-        return
-    for line in zshrc.read_text().splitlines():
-        m = re.match(r'^\s*export\s+([A-Z_][A-Z0-9_]*)=(.*)$', line)
-        if m and ("API_KEY" in m.group(1) or "TOKEN" in m.group(1)):
-            val = m.group(2).strip().strip('"').strip("'")
-            os.environ.setdefault(m.group(1), val)
+    """Historical name, kept so existing call sites still work.
+
+    On macOS this lifted `export FOO_API_KEY=...` lines out of ~/.zshrc. Windows has no
+    shell rc file; keys now come from the environment or config/keys.env, which the
+    bundled-keys autoload at the top of this file already reads. Nothing left to do.
+    """
+    return None
+
+
 
 
 def transcribe_clip(source: str, start: float, end: float,
@@ -63,7 +71,7 @@ def transcribe_clip(source: str, start: float, end: float,
     # Unique temp per PROCESS (+ start for multi-chunk within one) so PARALLEL clips never clobber
     # each other's extracted audio. A fixed path keyed only by start (=0 for every clip) caused
     # cross-contaminated captions when clips transcribed concurrently — never again.
-    audio = f'/tmp/_transcribe_lv3_{os.getpid()}_{int(start*1000)}.mp3'
+    audio = str(work_dir('transcribe_lv3') / f'{os.getpid()}_{int(start*1000)}.mp3')
     subprocess.run([
         'ffmpeg', '-y', '-hide_banner', '-loglevel', 'error',
         '-ss', f'{start:.3f}', '-to', f'{end:.3f}', '-i', source,

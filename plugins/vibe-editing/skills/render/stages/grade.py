@@ -6,6 +6,14 @@ Config:
     }
 """
 from __future__ import annotations
+# ── winenv bootstrap: locate the plugin's shared lib ──
+import os as _os2, sys as _sys2
+_d2 = _os2.path.dirname(_os2.path.abspath(__file__))
+while _d2 != _os2.path.dirname(_d2) and not _os2.path.isdir(_os2.path.join(_d2, '.claude-plugin')):
+    _d2 = _os2.path.dirname(_d2)
+_sys2.path.insert(0, _os2.path.join(_d2, 'lib', '_shared'))
+from fast_encode import encoder_args_bitrate  # noqa: E402
+# ── end winenv bootstrap ──
 
 from _util import run as ff
 
@@ -19,7 +27,7 @@ def run(work_dir, config, inputs, inputs_meta, project, manifest, out_path):
     filt = config.get("filter", DEFAULT_GRADE)
     ff(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", prior,
         "-vf", filt,
-        "-c:v", "h264_videotoolbox", "-b:v", "20M", "-tag:v", "avc1", "-pix_fmt", "yuv420p",
+        *encoder_args_bitrate("20M"),
         "-c:a", "copy", "-movflags", "+faststart", str(out_path)])
 
     upstream_meta = inputs_meta.get(list(inputs_meta.keys())[-1], {}) if inputs_meta else {}
