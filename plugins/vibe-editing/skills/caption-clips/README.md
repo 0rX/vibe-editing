@@ -12,7 +12,7 @@ A Claude Code skill that takes a single video containing multiple pre-edited sho
    pip install faster-whisper
    ```
 3. Install an FFmpeg that ships with **libass** (the `subtitles` filter). The default winget `ffmpeg` formula drops libass in recent versions — you want `ffmpeg-full`:
-   - macOS: `winget install --id ffmpeg-full` (the regular `ffmpeg` formula often lacks libass)
+   - Windows: `winget install --id Gyan.FFmpeg` (the FULL build — minimal ffmpeg builds lack libass)
    - Ubuntu: `sudo apt install ffmpeg` (stock build usually includes libass)
    - Windows: [gyan.dev full build](https://www.gyan.dev/ffmpeg/builds/)
 

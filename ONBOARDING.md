@@ -131,7 +131,7 @@ English. Only use this kit — don't pull tools or keys from anywhere else on my
 | Caption colors / size / emphasis | `skills/caption-clips/presets/spice.json` |
 | Caption font | the bundled `skills/caption-clips/fonts/` (see `FONTS.md`), or drop your own, then set it in the preset |
 | What makes a clip worth cutting (your SOP) | `skills/edit/prompts/clip_select.md` + `references/editorial_sop.md` |
-| Music | drop tracks in `brand/music/` (set `VIBE_MUSIC=/your/music`) |
+| Music | drop tracks in `brand/music/` (set `VIBE_MUSIC=C:\Users\you\Music\vibe`) |
 
 **The 6 quality gates** (run automatically inside `/edit`): mechanics · narrative · visual (face/framing) · audio (levels) · captions (accuracy/timing) · script (cold-viewer test). A clip that fails one doesn't ship. Optional Gemini "eyes" for long-form: free key at https://aistudio.google.com/apikey, add the `claude-video-vision` MCP, then `video_configure backend=gemini-api`.
 

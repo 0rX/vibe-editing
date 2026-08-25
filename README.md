@@ -45,7 +45,7 @@ real editorial judgment, not a generic template** — the clips come out to a hi
 |---|---|
 | API keys (Groq for transcription; Anthropic for best captions) | `plugins/vibe-editing/config/keys.env` |
 | Footage | the project's `00_SOURCE/` (or a URL / drive link) |
-| Music | your royalty-free tracks → `VIBE_MUSIC=/your/music` |
+| Music | your royalty-free tracks → `VIBE_MUSIC=C:\Users\you\Music\vibe` |
 | Font & brand | swap the bundled free font; set your cover logo / product name |
 
 ## What's deliberately NOT in here
