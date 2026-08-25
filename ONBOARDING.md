@@ -39,7 +39,9 @@ plain English. Keep a visible to-do list of the steps below and check them off a
    - This is the WINDOWS port. Use PowerShell, not bash. There is no Homebrew here.
 
 2) SET UP MY MACHINE (install only what's missing — everything here is free + open-source)
-   - Run:  .\setup.ps1
+   - Run:  powershell -ExecutionPolicy Bypass -File .\setup.ps1
+     (the -ExecutionPolicy Bypass part matters: a fresh Windows refuses to run .ps1
+      files at all, and this gets past that WITHOUT changing any machine setting)
      That one script installs ffmpeg + yt-dlp via winget, creates the Python virtual
      environment (.venv) with the kit's libraries, sets PYTHONUTF8=1, and finishes by
      running the health check itself. Add -IncludeOptional to also get tesseract,

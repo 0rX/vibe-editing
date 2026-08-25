@@ -101,7 +101,7 @@ script as ANSI, so an em dash renders as mojibake.
 ## Verifying
 
 ```powershell
-.\setup.ps1                                          # must end in READY
+powershell -ExecutionPolicy Bypass -File .\setup.ps1     # must end in READY
 $py = ".\plugins\vibe-editing\.venv\Scripts\python.exe"
 & $py .\plugins\vibe-editing\tests\test_encode_gate.py          # lock invariant
 & $py .\plugins\vibe-editing\skills\edit\scripts\_selftest.py   # upstream logic tests

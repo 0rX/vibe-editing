@@ -1,7 +1,8 @@
 # Quickstart — 3 steps
 
 ```
-1.  .\setup.ps1                      # installs ffmpeg + deps, runs a health check
+1.  powershell -ExecutionPolicy Bypass -File .\setup.ps1
+    # installs Python/ffmpeg/deps, then runs a health check
 2.  (optional) paste a free Groq key in plugins/vibe-editing/config/keys.env
 3.  In Claude Code:   /edit <your youtube link>
     or in a terminal: .\bin\vibe-editing.ps1 "<your youtube link>"

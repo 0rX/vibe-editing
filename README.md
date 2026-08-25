@@ -14,8 +14,8 @@
 > | AMD GPU | `h264_amf` |
 > | anything else | `libx264` (software) |
 >
-> **Requirements:** Windows 10/11, Python 3.10+, a paid Claude plan. Run `.\setup.ps1` and it
-> installs the rest. See `PORTING.md` for what changed and why.
+> **Requirements:** Windows 10/11 and a paid Claude plan. Setup installs everything else,
+> Python included. See `PORTING.md` for what changed and why.
 
 The full short-form pipeline as a Claude Code plugin: ingest → transcribe → mine the best
 moments (with a real editorial rubric) → hand-cut → face-track to 9:16 → caption → mix music →
@@ -27,7 +27,8 @@ render → 6-gate audit → deliver.
 
 ## Quickstart
 ```
-.\setup.ps1                         # installs ffmpeg + deps, runs a health check
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+# installs Python + ffmpeg + deps, runs a health check
 # (optional) paste a free Groq key in plugins/vibe-editing/config/keys.env
 /edit <your youtube link>          # in Claude Code   — or:   .\bin\vibe-editing.ps1 "<link>"
 ```

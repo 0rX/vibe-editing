@@ -78,14 +78,53 @@ if ($SkipWinget) {
 Write-Host ''
 Write-Host 'Setting up the Python environment...' -ForegroundColor Green
 
-if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
-    Write-Host '!! Python not found. Install it:  winget install Python.Python.3.12' -ForegroundColor Red
-    exit 1
+function Get-RealPython {
+    <#
+      Returns a working python.exe, or $null.
+
+      Windows 11 ships a FAKE `python` in WindowsApps: a stub that opens the Microsoft
+      Store instead of running anything. Get-Command finds it and Test-Path says it
+      exists, so a naive check passes and then `python -m venv` silently does nothing.
+      The only reliable test is to execute it and see if real Python answers.
+    #>
+    foreach ($cand in @('python', 'python3', 'py')) {
+        $cmd = Get-Command $cand -ErrorAction SilentlyContinue
+        if (-not $cmd) { continue }
+        if ($cmd.Source -like '*WindowsApps*') { continue }   # the Store stub
+        try {
+            $v = & $cmd.Source -c "import sys; print(sys.executable)" 2>$null
+            if ($LASTEXITCODE -eq 0 -and $v) { return $v.Trim() }
+        } catch { }
+    }
+    return $null
 }
+
+$python = Get-RealPython
+if (-not $python) {
+    if ($SkipWinget -or -not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        Write-Host '!! Python not found. Install it:  winget install --id Python.Python.3.12' -ForegroundColor Red
+        exit 1
+    }
+    Write-Host 'Installing Python (not present on a fresh Windows)...' -ForegroundColor Green
+    winget install --id Python.Python.3.12 --accept-package-agreements --accept-source-agreements `
+        --disable-interactivity --silent 2>&1 | Out-Null
+    Update-PathFromRegistry
+    $python = Get-RealPython
+    if (-not $python) {
+        Write-Host '!! Python installed but not on PATH yet. Close this window, open a NEW' -ForegroundColor Red
+        Write-Host '   PowerShell, and re-run setup.' -ForegroundColor Red
+        exit 1
+    }
+}
+Write-Host "Using Python: $python" -ForegroundColor DarkGray
 
 $venvPy = Join-Path $plug '.venv\Scripts\python.exe'
 if (-not (Test-Path $venvPy)) {
-    & python -m venv (Join-Path $plug '.venv')
+    & $python -m venv (Join-Path $plug '.venv')
+}
+if (-not (Test-Path $venvPy)) {
+    Write-Host '!! Failed to create the virtual environment.' -ForegroundColor Red
+    exit 1
 }
 Write-Host 'Installing Python packages (this takes a few minutes on first run)...' -ForegroundColor Green
 & $venvPy -m pip install --upgrade pip --quiet
