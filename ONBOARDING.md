@@ -4,7 +4,8 @@ Turn your long videos into finished, captioned vertical clips — **in your own 
 editing anything yourself. **You do not need to be technical.** The Claude Code app does the whole
 setup for you and asks you a few simple questions along the way.
 
-**Repo:** https://github.com/maddexritter-rgb/vibe-editing
+**Repo:** https://github.com/0rX/vibe-editing — the **Windows** port.
+*(Forked from [maddexritter-rgb/vibe-editing](https://github.com/maddexritter-rgb/vibe-editing), which is macOS-only.)*
 
 ---
 
@@ -32,15 +33,22 @@ plain English. Keep a visible to-do list of the steps below and check them off a
 
 1) GET THE KIT
    - Clone it into my Documents folder:
-       git clone https://github.com/maddexritter-rgb/vibe-editing.git
+       git clone https://github.com/0rX/vibe-editing.git
    - Then do all the work inside that "vibe-editing" folder.
    - If git or winget isn't installed, install them first, yourself.
+   - This is the WINDOWS port. Use PowerShell, not bash. There is no Homebrew here.
 
 2) SET UP MY MACHINE (install only what's missing — everything here is free + open-source)
-   - Run:  python plugins/vibe-editing/doctor.py   (it shows what's installed vs missing).
-   - Install ONLY the missing pieces yourself: ffmpeg, yt-dlp, tesseract, rclone, and a Python
-     virtual environment (.venv) with the kit's libraries + faster-whisper (offline transcription).
-   - Re-run doctor.py until it prints READY, then tell me in plain English that it's ready.
+   - Run:  .\setup.ps1
+     That one script installs ffmpeg + yt-dlp via winget, creates the Python virtual
+     environment (.venv) with the kit's libraries, sets PYTHONUTF8=1, and finishes by
+     running the health check itself. Add -IncludeOptional to also get tesseract,
+     rclone and node.
+   - If anything is still missing afterwards, doctor.py prints the exact command to fix
+     it. Run those, then re-run:  plugins\vibe-editing\.venv\Scripts\python.exe plugins\vibe-editing\doctor.py
+   - Repeat until it prints READY, then tell me in plain English that it's ready — and
+     tell me which video encoder it found (NVIDIA NVENC, Intel Quick Sync, AMD AMF, or
+     software). That determines how fast my renders will be.
 
 3) HOW I'LL MAKE CLIPS (nothing for me to type)
    - I don't need to install or type any command for this. The folder has a CLAUDE.md that tells
